@@ -22,6 +22,10 @@
     <div class="panel-h" data-i18n="panel_applicant">Applicant file</div>
     <p class="lead" data-i18n="lead">Load one applicant's data (an .md file from the bank / Open Banking) and generate a lending verdict.</p>
 
+    <div class="gallery-h"><span data-i18n="gallery_h">Sample applicants</span> <span class="sub" data-i18n="gallery_sub">· click a card to preview, then score — or drag it into the box below</span></div>
+    <div class="gallery" id="gallery"></div>
+
+    <div class="or"><span data-i18n="or_own">or load your own .md file</span></div>
     <div id="drop" class="drop" tabindex="0" role="button">
       <span class="drop-ic" aria-hidden="true">＋</span>
       <div class="drop-t" data-i18n="drop_title">Drag &amp; drop a .md applicant file</div>
@@ -34,7 +38,6 @@
 
     <div class="actions">
       <button id="gen" class="run" data-i18n="btn_generate">Generate Report</button>
-      <button id="example" type="button" class="linkbtn" data-i18n="btn_example">Try an example</button>
     </div>
     <div id="status" class="status" role="status" aria-live="polite"></div>
     <div id="backend" class="backend" aria-live="polite"></div>
@@ -166,6 +169,35 @@ textarea{width:100%;min-height:118px;resize:vertical;font-family:ui-monospace,"S
 .status.ok{color:var(--ok)} .status.err{color:var(--bad)} .status.err b{font-family:ui-monospace,monospace}
 .backend{font-size:11px;margin-top:4px;color:var(--faint)}
 .backend b{color:var(--blue);font-weight:700}
+
+/* ---- applicant gallery ---- */
+.gallery-h{font-weight:700;font-size:12.5px;margin:6px 0 9px}
+.gallery-h .sub{font-weight:400;color:var(--faint);font-size:10.5px}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.gcard{border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);overflow:hidden;cursor:grab}
+.gcard.open{border-color:var(--blue)}
+.gcard-h{display:flex;align-items:center;gap:8px;padding:10px 11px;cursor:pointer}
+.gav{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;background:linear-gradient(135deg,#2b6be4,#37c0ea)}
+.gmeta{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.gname{display:block;font-weight:700;font-size:12.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gemp{display:block;font-size:10.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcaret{color:var(--faint);font-size:10px;transition:transform .15s}
+.gcard.open .gcaret{transform:rotate(180deg)}
+.gpill{font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;letter-spacing:.02em}
+.gpill.ok{color:var(--ok);background:var(--ok-bg)} .gpill.warn{color:var(--warn);background:var(--warn-bg)} .gpill.bad{color:var(--bad);background:var(--bad-bg)}
+.gbody{display:none;padding:0 11px 11px;font-size:11px;color:var(--mut)}
+.gcard.open .gbody{display:block}
+.grow{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.grow:last-of-type{border-bottom:0}
+.grow b{color:var(--ink);font-variant-numeric:tabular-nums;text-align:right}
+.gsec{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--faint);margin:8px 0 3px}
+.gflow{display:flex;flex-wrap:wrap;gap:4px}
+.gflow span{font-size:10px;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums}
+.gtag{display:inline-block;font-size:10px;background:var(--blue-soft);color:var(--blue-ink);border-radius:6px;padding:1px 7px;margin:2px 4px 0 0}
+.gtag.miss{background:var(--bad-bg);color:var(--bad)}
+.gload{width:100%;margin-top:10px;border:none;background:var(--blue);color:#fff;font-family:var(--sans);font-weight:700;font-size:12px;padding:9px;border-radius:9px;cursor:pointer}
+.gload:hover{background:var(--blue-ink)}
+@media (max-width:560px){ .gallery{grid-template-columns:1fr 1fr} }
 
 .report{display:flex;flex-direction:column;gap:14px}
 @media (prefers-reduced-motion:no-preference){.report:not([hidden]){animation:rise .3s ease}}
@@ -349,6 +381,9 @@ textarea{width:100%;min-height:118px;resize:vertical;font-family:ui-monospace,"S
       cmp_tl_reason:"Verified financial behaviour — Open Banking + trusted alternative data",
       m_conf_tip:"Confidence reflects the completeness, consistency, and corroboration of available evidence.",
       gov_timestamp:"Decision timestamp",
+      gallery_h:"Sample applicants", gallery_sub:"· click a card to preview, then score — or drag it into the box below",
+      or_own:"or load your own .md file",
+      g_income:"Declared income", g_ob:"Open Banking · 6-month inflow", g_alt:"Alternative data", g_load:"Load & Score",
       footer:"Deterministic engine · figures compute live in your browser."
     },
     vi:{
@@ -1155,29 +1190,225 @@ textarea{width:100%;min-height:118px;resize:vertical;font-family:ui-monospace,"S
   fileInput.addEventListener("change",function(){var f=fileInput.files[0];if(f)readFile(f);});
   ["dragenter","dragover"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add("hot");});});
   ["dragleave","drop"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove("hot");});});
-  drop.addEventListener("drop",function(e){var f=e.dataTransfer&&e.dataTransfer.files[0];if(f)readFile(f);});
+  drop.addEventListener("drop",function(e){
+    var f=e.dataTransfer&&e.dataTransfer.files[0];
+    if(f){readFile(f);return;}
+    var txt=e.dataTransfer&&e.dataTransfer.getData("text/plain");
+    if(txt&&/Applicant|Monthly Inflow/i.test(txt)){ loadSample(txt,"Applicant"); }
+  });
   function readFile(f){var rd=new FileReader();rd.onload=function(){loadText(rd.result,f.name);generate();};rd.onerror=function(){setStatus("Couldn't read that file.","err");};rd.readAsText(f);}
 
   $("#gen").addEventListener("click",generate);
-  $("#example").addEventListener("click",function(){loadText(SAMPLE,"Example");generate();});
 
-  var SAMPLE=[
-    "# TrustLink Applicant File","",
-    "## Applicant",
-    "- name: Ms. Aom","- employment: Freelancer","- occupation: Digital Designer",
-    "- credit_history: thin","- ekyc_verified: true","- bureau_tradelines: 0",
-    "- declared_monthly_income: 18500000","- currency: VND","",
-    "## Loan Request",
-    "- requested_amount: 50000000","- tenor_months: 12","- purpose: Business equipment","",
-    "## Monthly Inflow (Open Banking)",
-    "- 2026-01: 18200000","- 2026-02: 14500000","- 2026-03: 22900000",
-    "- 2026-04: 14800000","- 2026-05: 22200000","- 2026-06: 18400000","",
-    "## Monthly Outflow (per month)",
-    "- rent | expense | 4500000 | on_time","- food | expense | 2500000 | on_time",
-    "- transport | expense | 1000000 | on_time","- utility | payment | 800000 | on_time",
-    "- insurance | payment | 716000 | on_time","- shopping | expense | 2684000 | on_time"
-  ].join("\n");
+  // ---- sample applicants (embedded so the static demo needs NO external files) ----
+  var SAMPLE_MD = {
+aom:`# TrustLink Applicant File
+## Applicant
+- name: Ms. Aom
+- employment: Freelancer
+- occupation: Digital Designer
+- credit_history: thin
+- ekyc_verified: true
+- bureau_tradelines: 0
+- declared_monthly_income: 18500000
+## Loan Request
+- requested_amount: 50000000
+- tenor_months: 12
+- purpose: Business equipment
+## Monthly Inflow (Open Banking)
+- 2026-01: 18200000
+- 2026-02: 14500000
+- 2026-03: 22900000
+- 2026-04: 14800000
+- 2026-05: 22200000
+- 2026-06: 18400000
+## Monthly Outflow (per month)
+- rent | expense | 4500000 | on_time
+- food | expense | 2500000 | on_time
+- transport | expense | 1000000 | on_time
+- utility | payment | 800000 | on_time
+- insurance | payment | 716000 | on_time
+- shopping | expense | 2684000 | on_time`,
+bao:`# TrustLink Applicant File
+## Applicant
+- name: Mr. Bao
+- employment: Salaried
+- occupation: Bank Officer
+- credit_history: established
+- ekyc_verified: true
+- bureau_tradelines: 5
+- declared_monthly_income: 30000000
+## Loan Request
+- requested_amount: 80000000
+- tenor_months: 12
+- purpose: Home improvement
+## Monthly Inflow (Open Banking)
+- 2026-01: 30000000
+- 2026-02: 30000000
+- 2026-03: 30000000
+- 2026-04: 30000000
+- 2026-05: 30000000
+- 2026-06: 30000000
+## Monthly Outflow (per month)
+- rent | expense | 7000000 | on_time
+- food | expense | 4000000 | on_time
+- transport | expense | 2000000 | on_time
+- utility | payment | 1200000 | on_time
+- insurance | payment | 1300000 | on_time
+- shopping | expense | 2500000 | on_time`,
+chi:`# TrustLink Applicant File
+## Applicant
+- name: Ms. Chi
+- employment: Gig worker
+- occupation: Rideshare Driver
+- credit_history: thin
+- ekyc_verified: true
+- bureau_tradelines: 0
+- declared_monthly_income: 18000000
+## Loan Request
+- requested_amount: 40000000
+- tenor_months: 12
+- purpose: Vehicle maintenance
+## Monthly Inflow (Open Banking)
+- 2026-01: 8000000
+- 2026-02: 28000000
+- 2026-03: 6000000
+- 2026-04: 30000000
+- 2026-05: 10000000
+- 2026-06: 26000000
+## Monthly Outflow (per month)
+- rent | expense | 5000000 | on_time
+- food | expense | 3500000 | on_time
+- utility | payment | 900000 | on_time
+- insurance | payment | 600000 | on_time
+- shopping | expense | 3000000 | on_time`,
+dat:`# TrustLink Applicant File
+## Applicant
+- name: Mr. Dat
+- employment: Self-employed
+- occupation: Trader
+- credit_history: thin
+- ekyc_verified: true
+- bureau_tradelines: 0
+- declared_monthly_income: 40000000
+## Loan Request
+- requested_amount: 60000000
+- tenor_months: 12
+- purpose: Working capital
+## Monthly Inflow (Open Banking)
+- 2026-01: 12000000
+- 2026-02: 12000000
+- 2026-03: 12000000
+- 2026-04: 12000000
+- 2026-05: 12000000
+- 2026-06: 12000000
+## Monthly Outflow (per month)
+- rent | expense | 6000000 | on_time
+- food | expense | 4000000 | on_time
+- utility | payment | 900000 | missed
+- insurance | payment | 700000 | missed
+- shopping | expense | 1500000 | on_time`,
+fah:`# TrustLink Applicant File
+## Applicant
+- name: Ms. Fah
+- employment: Freelancer
+- occupation: Video Editor
+- credit_history: thin
+- ekyc_verified: true
+- bureau_tradelines: 0
+- declared_monthly_income: 21000000
+## Loan Request
+- requested_amount: 40000000
+- tenor_months: 12
+- purpose: Equipment upgrade
+## Monthly Inflow (Open Banking)
+- 2026-01: 16000000
+- 2026-02: 14000000
+- 2026-03: 15000000
+- 2026-04: 50000000
+- 2026-05: 15000000
+- 2026-06: 16000000
+## Monthly Outflow (per month)
+- rent | expense | 5000000 | on_time
+- food | expense | 3000000 | on_time
+- utility | payment | 800000 | on_time
+- insurance | payment | 600000 | on_time
+- shopping | expense | 2000000 | on_time`,
+minh:`# TrustLink Applicant File
+## Applicant
+- name: Mr. Minh
+- employment: Salaried
+- occupation: Factory Technician
+- credit_history: thin
+- ekyc_verified: true
+- bureau_tradelines: 0
+- declared_monthly_income: 20000000
+- payslip_monthly_income: 20000000
+- registry_monthly_income: 19500000
+## Loan Request
+- requested_amount: 60000000
+- tenor_months: 12
+- purpose: Motorbike purchase
+## Monthly Inflow (Open Banking)
+- 2026-01: 20000000
+- 2026-02: 20000000
+- 2026-03: 20200000
+- 2026-04: 19800000
+- 2026-05: 20000000
+- 2026-06: 20000000
+## Monthly Outflow (per month)
+- rent | expense | 4000000 | on_time
+- food | expense | 3000000 | on_time
+- transport | expense | 1200000 | on_time
+- utility | payment | 900000 | on_time
+- insurance | payment | 800000 | on_time
+- shopping | expense | 2000000 | on_time`
+  };
+  var SAMPLE_ORDER = ["aom","bao","chi","dat","fah","minh"];
 
+  function initials(name){ var s=(name||"").replace(/^(Mr|Ms|Mrs)\.?\s*/i,"").trim(); return (s.charAt(0)||"?").toUpperCase(); }
+  function VNDm(n){ return (Math.round(n/1e5)/10)+"M"; }
+
+  function loadSample(md,name){ loadText(md,name||"Sample"); generate(); }
+
+  function renderGallery(){
+    var g=$("#gallery"); if(!g) return;
+    g.innerHTML="";
+    SAMPLE_ORDER.forEach(function(id){
+      var md=SAMPLE_MD[id]; if(!md) return;
+      var p,r; try{ p=parseApplicant(md); r=engine(p); }catch(e){ return; }
+      var GPILL={ok:"Approve",warn:"Review",bad:"Reject"};
+      var cls=r.cls, pillTxt=GPILL[cls]||cls;
+      var inflow=p.inflows.map(function(v){return '<span>'+VNDm(v)+'</span>';}).join("");
+      var tags=p.lines.map(function(l){return '<span class="gtag'+(l[3]?'':' miss')+'">'+l[0]+(l[3]?'':' ✕')+'</span>';}).join("");
+      if(p.payslip!=null) tags+='<span class="gtag">pay-slip</span>';
+      if(p.registry!=null) tags+='<span class="gtag">national registry</span>';
+      var creditKey="credit_"+(p.hist==="none"?"none":p.hist==="established"?"established":"thin");
+      var card=document.createElement("div");
+      card.className="gcard"; card.setAttribute("draggable","true");
+      card.innerHTML=
+        '<div class="gcard-h">'+
+          '<span class="gav">'+initials(p.name)+'</span>'+
+          '<span class="gmeta"><span class="gname">'+p.name+'</span><span class="gemp">'+(p.emp||"—")+' · '+p.occ+'</span></span>'+
+          '<span class="gpill '+cls+'">'+pillTxt+'</span>'+
+          '<span class="gcaret">▼</span>'+
+        '</div>'+
+        '<div class="gbody">'+
+          '<div class="grow"><span>'+T("who_credit")+'</span><b>'+T(creditKey)+(p.ekyc?' · eKYC ✓':'')+'</b></div>'+
+          '<div class="grow"><span>'+T("g_income")+'</span><b>'+VND(p.declared)+'</b></div>'+
+          '<div class="grow"><span>'+T("who_requested")+'</span><b>'+VND(p.requested)+' · '+p.tenor+'m</b></div>'+
+          '<div class="gsec">'+T("g_ob")+'</div><div class="gflow">'+inflow+'</div>'+
+          '<div class="gsec">'+T("g_alt")+'</div><div>'+tags+'</div>'+
+          '<button type="button" class="gload">'+T("g_load")+'</button>'+
+        '</div>';
+      card.querySelector(".gcard-h").addEventListener("click",function(){ card.classList.toggle("open"); });
+      card.querySelector(".gload").addEventListener("click",function(e){ e.stopPropagation(); loadSample(md,p.name); });
+      card.addEventListener("dragstart",function(e){ e.dataTransfer.setData("text/plain",md); e.dataTransfer.effectAllowed="copy"; });
+      g.appendChild(card);
+    });
+  }
+
+  renderGallery();
   applyLang();   // initial paint (English)
 })();
 </script>
