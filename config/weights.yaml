@@ -1,0 +1,28 @@
+# Dimension weights for the Trust Score.
+# Source: Trust Intelligence Engine note, section 12 (the only concrete weights in the docs).
+# DESIGN FIX: Fraud Risk (originally 5%) is REMOVED from the weighted sum and handled as an
+# independent veto layer (see fraud/). The 6 positive weights are kept as their original
+# integers and the weighted sum is divided by their sum (95) — mathematically identical to
+# renormalising to 100%, with zero rounding error and exact traceability to the doc.
+weights_version: "1.0.0"
+
+# integer weights, divided by sum(=95) at aggregation time
+weights:
+  income_stability: 25
+  payment_discipline: 20
+  savings_behaviour: 15
+  financial_trend: 15
+  lifestyle_stability: 10
+  identity_trust: 10
+
+# Trust tier cut-points on the 0-1000 scale (aligned to Volume 5 decision bands).
+tiers:
+  strong_min: 720
+  moderate_min: 600
+
+# Confidence formula: confidence = breadth_weight*breadth + (1-breadth_weight)*consistency
+# breadth   = mean per-dimension data coverage (0..1)   -> "how much do we see?"
+# consistency = 1 - normalised cashflow volatility (0..1) -> "how clean is what we see?"
+# Split chosen so a thin-file-but-clean borrower keeps high confidence (see calibration_note.md).
+confidence:
+  breadth_weight: 0.40

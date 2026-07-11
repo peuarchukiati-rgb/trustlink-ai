@@ -1,0 +1,408 @@
+<h1 class="sr-only">TrustLink AI — pitch one-pager</h1>
+<div class="page">
+
+  <header class="hero">
+    <div class="brand"><span class="mark"></span>
+      <div><div class="bn">TrustLink&nbsp;AI</div>
+        <div class="bt" data-i18n="brand_tag">Explainable Trust Intelligence for AI-assisted lending</div></div>
+    </div>
+    <div class="hr">
+      <div class="langsel" id="langsel">
+        <button type="button" id="langbtn" class="langbtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language"><span id="langcur"></span><span class="caret" aria-hidden="true">▾</span></button>
+        <div id="langmenu" class="langmenu" role="listbox" hidden></div>
+      </div>
+      <div class="p4">Shinhan Future's Lab · <b>P4</b></div>
+    </div>
+  </header>
+
+  <p class="thesis" data-i18n="thesis">Score thin-file borrowers from <b>Open Banking behaviour</b>, not bureau history — a human underwriter gets a <b>transparent</b> Approve / Review / Reject in under a second. <span class="hl">AI recommends · a human approves.</span></p>
+
+  <section class="proof">
+    <div class="proof-l">
+      <div class="k" data-i18n="proof_k">The core claim, proven</div>
+      <div class="vs">
+        <div class="side bad"><span data-i18n="proof_bureau">Traditional bureau</span><b data-i18n="proof_reject">REJECT</b><i data-i18n="proof_reject_why">no credit history</i></div>
+        <div class="arrow">→</div>
+        <div class="side ok"><span data-i18n="proof_tie">TrustLink TIE</span><b data-i18n="proof_approve">APPROVE</b><i data-i18n="proof_approve_why">on trusted behaviour</i></div>
+      </div>
+    </div>
+    <div class="proof-r">
+      <div class="aom-h" data-i18n="aom_h">Ms. Aom · thin-file freelancer</div>
+      <div class="aom-score"><b>742</b><span data-i18n="aom_sub">/ 1000 · Strong · confidence 0.86 · fraud Low</span></div>
+      <div class="aom-dec" data-i18n="aom_dec">Approve (adjusted) → <b>45,000,000 VND</b> / 12 months</div>
+      <div class="dims">
+        <span data-i18n="op_income">Income 70</span><span data-i18n="op_payment">Payment 88</span>
+        <span data-i18n="op_savings">Savings 80</span><span class="w" data-i18n="op_trend">Trend 52</span>
+        <span data-i18n="op_life">Lifestyle 76</span><span data-i18n="op_id">Identity 80</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="qh" data-i18n="qh">The questions judges ask — answered with numbers</div>
+  <section class="grid">
+    <div class="q"><div class="qn" data-i18n="q1_q">How accurate is it?</div><div class="big" data-i18n="q1_b">AUC 0.64</div><div class="qd" data-i18n="q1_d">On 800 synthetic borrowers, <b>Weak-tier defaults ~3× more than Strong</b> (7% → 23%).</div></div>
+    <div class="q star"><div class="qn" data-i18n="q2_q">Why 742? Did you hand-pick it?</div><div class="big" data-i18n="q2_b">742 ✓ by data</div><div class="qd" data-i18n="q2_d">Fed outcomes, the engine <b>learns the weights</b> and lands Aom at <b>739</b> — the data confirms our 742.</div></div>
+    <div class="q"><div class="qn" data-i18n="q7_q">Is it real, or a mockup?</div><div class="big" data-i18n="q7_b">Real system</div><div class="qd" data-i18n="q7_d">Runs on the actual <b>Python engine behind a live API</b> (server-side) — with an in-browser fallback for sharing.</div></div>
+    <div class="q"><div class="qn" data-i18n="q3_q">How do you stop fraud?</div><div class="big" data-i18n="q3_b">100% caught</div><div class="qd" data-i18n="q3_d">Independent <b>veto</b> + a graduated score (weak signals combine). Caught 100% of over-declared applicants.</div></div>
+    <div class="q"><div class="qn" data-i18n="q4_q">Do you over-lend?</div><div class="big" data-i18n="q4_b">DSR ≤ 45%</div><div class="qd" data-i18n="q4_d">A debt-service test caps the offer — a 100M request with existing debt is cut to <b>20M</b>.</div></div>
+    <div class="q"><div class="qn" data-i18n="q5_q">Is it fair?</div><div class="big" data-i18n="q5_b">Measured</div><div class="qd" data-i18n="q5_d">Approval parity by group + disparate-impact ratio. We <b>report the gap honestly</b>.</div></div>
+  </section>
+
+  <div class="qh" data-i18n="fit_h">Built for P4's constraints</div>
+  <section class="fit">
+    <div class="f"><b data-i18n="f1_t">Less paperwork</b><span data-i18n="f1_d">Reads Open Banking data instead of asking the borrower to gather and upload documents.</span></div>
+    <div class="f"><b data-i18n="f2_t">Approved-partner ready</b><span data-i18n="f2_d">Consumes data from an approved fintech / Open Banking partner — <b>no direct data-pulling</b>.</span></div>
+    <div class="f"><b data-i18n="f3_t">Sandbox-ready</b><span data-i18n="f3_d">Consent + immutable audit trail + human authority + explainable outputs — for a regulatory sandbox.</span></div>
+  </section>
+
+  <section class="foot">
+    <div class="princ">
+      <span data-i18n="pr1">Deterministic</span><span data-i18n="pr2">Explainable</span><span data-i18n="pr3">Human-in-the-loop</span>
+      <span data-i18n="pr4">Fraud = veto</span><span data-i18n="pr5">Missing ≠ bad</span><span data-i18n="pr6">Point-in-time</span>
+    </div>
+    <div class="note" data-i18n="note"><b>Prototype on synthetic data</b> — demonstrates the mechanism and explainability; real predictive accuracy needs real lending outcomes.</div>
+  </section>
+</div>
+
+<style>
+:root{
+  color-scheme:light;
+  --page:#f3f4f7; --card:#fff; --line:#e5e9f0; --ink:#15181f; --mut:#66707e; --faint:#9aa2ad;
+  --blue:#1c63b7; --cyan:#29bcea; --blue-soft:#e8f0fb;
+  --ok:#12b76a; --ok-bg:#e7f7ef; --warn:#e8930c; --warn-bg:#fbf1df; --bad:#e5484d; --bad-bg:#fdeceb;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Roboto,"Noto Sans",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{background:var(--page);margin:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.page{font-family:var(--sans);color:var(--ink);background:var(--page);max-width:880px;margin:0 auto;
+  padding:20px 22px 24px;display:flex;flex-direction:column;gap:13px;-webkit-font-smoothing:antialiased}
+
+.hero{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.brand{display:flex;gap:11px;align-items:center}
+.mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:inline-block}
+.bn{font-weight:800;font-size:20px;letter-spacing:-.02em;color:var(--blue)}
+.bt{font-size:12px;color:var(--mut)}
+.hr{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.langsel{position:relative}
+.langbtn{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 11px;font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer}
+.langbtn:hover{border-color:var(--blue)} .caret{color:var(--faint);font-size:10px}
+.langmenu{position:absolute;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(20,30,60,.14);padding:5px;min-width:180px;z-index:30;max-height:280px;overflow:auto}
+.langmenu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-radius:8px;padding:9px 11px;font-family:var(--sans);font-size:13.5px;color:var(--ink);cursor:pointer}
+.langmenu button:hover{background:var(--blue-soft)} .langmenu button.on{background:var(--blue-soft);color:var(--blue);font-weight:700}
+.langmenu .fl{font-size:16px;line-height:1}
+.p4{font-size:12px;color:var(--mut);border:1px solid var(--line);background:var(--card);padding:6px 12px;border-radius:20px}
+.p4 b{color:var(--blue)}
+
+.thesis{margin:0;font-size:14.5px;line-height:1.5;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:12px;padding:13px 15px}
+.thesis .hl{color:var(--blue);font-weight:700}
+
+.proof{display:grid;grid-template-columns:1.15fr 1fr;gap:12px}
+.proof-l,.proof-r{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.k,.aom-h{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:700;margin-bottom:10px}
+.vs{display:flex;align-items:stretch;gap:10px}
+.side{flex:1;text-align:center;border-radius:10px;padding:10px 6px}
+.side.bad{background:var(--bad-bg)} .side.ok{background:var(--ok-bg)}
+.side span{display:block;font-size:11px;color:var(--mut)}
+.side b{display:block;font-size:18px;font-weight:800;margin:2px 0}
+.side.bad b{color:var(--bad)} .side.ok b{color:var(--ok)}
+.side i{font-style:normal;font-size:10.5px;color:var(--mut)}
+.arrow{display:flex;align-items:center;color:var(--faint);font-size:20px;font-weight:800}
+.aom-score{display:flex;align-items:baseline;gap:8px}
+.aom-score b{font-size:34px;font-weight:800;color:var(--blue);letter-spacing:-.02em}
+.aom-score span{font-size:11.5px;color:var(--mut)}
+.aom-dec{font-size:13px;margin-top:4px} .aom-dec b{color:var(--ink)}
+.dims{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.dims span{font-size:10.5px;background:var(--blue-soft);color:var(--blue);border-radius:6px;padding:3px 7px;font-weight:600}
+.dims .w{background:var(--warn-bg);color:var(--warn)}
+
+.qh{font-size:12px;font-weight:700;color:var(--mut);margin-top:2px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px}
+.q.star{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue) inset,0 6px 18px rgba(28,99,183,.10)}
+.qn{font-size:12px;font-weight:700;color:var(--mut)}
+.big{font-size:20px;font-weight:800;color:var(--blue);letter-spacing:-.02em;margin:5px 0 6px}
+.qd{font-size:11.5px;line-height:1.5}
+
+.fit{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.f{background:var(--blue-soft);border:1px solid color-mix(in srgb,var(--blue) 22%,transparent);border-radius:13px;padding:13px}
+.f b{display:block;color:var(--blue);font-size:13px;margin-bottom:5px}
+.f span{font-size:11.5px;line-height:1.5}
+.f span b{display:inline;color:var(--ink);font-size:11.5px;margin:0}
+
+.foot{display:flex;flex-direction:column;gap:9px}
+.princ{display:flex;flex-wrap:wrap;gap:7px}
+.princ span{font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-soft);padding:5px 10px;border-radius:20px}
+.note{font-size:11px;line-height:1.5;color:var(--mut)} .note b{color:var(--ink)}
+
+@media(max-width:720px){.proof{grid-template-columns:1fr}.grid,.fit{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.grid,.fit{grid-template-columns:1fr}}
+</style>
+
+<script>
+(function(){
+  var LANGS=[["en","🇬🇧","English"],["vi","🇻🇳","Tiếng Việt"],["th","🇹🇭","ไทย"],["ko","🇰🇷","한국어"],["zh","🇨🇳","中文"],["ja","🇯🇵","日本語"],["id","🇮🇩","Bahasa Indonesia"],["ms","🇲🇾","Bahasa Melayu"],["fil","🇵🇭","Filipino"],["fr","🇫🇷","Français"],["es","🇪🇸","Español"],["de","🇩🇪","Deutsch"]];
+  function langText(code){for(var i=0;i<LANGS.length;i++)if(LANGS[i][0]===code)return LANGS[i][1]+" "+LANGS[i][2];return code;}
+  var LANG="en";
+  var I18N={
+    en:{brand_tag:"Explainable Trust Intelligence for AI-assisted lending",
+      thesis:'Score thin-file borrowers from <b>Open Banking behaviour</b>, not bureau history — a human underwriter gets a <b>transparent</b> Approve / Review / Reject in under a second. <span class="hl">AI recommends · a human approves.</span>',
+      proof_k:"The core claim, proven",proof_bureau:"Traditional bureau",proof_reject:"REJECT",proof_reject_why:"no credit history",
+      proof_tie:"TrustLink TIE",proof_approve:"APPROVE",proof_approve_why:"on trusted behaviour",
+      aom_h:"Ms. Aom · thin-file freelancer",aom_sub:"/ 1000 · Strong · confidence 0.86 · fraud Low",
+      aom_dec:'Approve (adjusted) → <b>45,000,000 VND</b> / 12 months',
+      op_income:"Income 70",op_payment:"Payment 88",op_savings:"Savings 80",op_trend:"Trend 52",op_life:"Lifestyle 76",op_id:"Identity 80",
+      qh:"The questions judges ask — answered with numbers",
+      q1_q:"How accurate is it?",q1_b:"AUC 0.64",q1_d:'On 800 synthetic borrowers, <b>Weak-tier defaults ~3× more than Strong</b> (7% → 23%).',
+      q2_q:"Why 742? Did you hand-pick it?",q2_b:"742 ✓ by data",q2_d:'Fed outcomes, the engine <b>learns the weights</b> and lands Aom at <b>739</b> — the data confirms our 742.',
+      q7_q:"Is it real, or a mockup?",q7_b:"Real system",q7_d:'Runs on the actual <b>Python engine behind a live API</b> (server-side) — with an in-browser fallback for sharing.',
+      q3_q:"How do you stop fraud?",q3_b:"100% caught",q3_d:'Independent <b>veto</b> + a graduated score (weak signals combine). Caught 100% of over-declared applicants.',
+      q4_q:"Do you over-lend?",q4_b:"DSR ≤ 45%",q4_d:'A debt-service test caps the offer — a 100M request with existing debt is cut to <b>20M</b>.',
+      q5_q:"Is it fair?",q5_b:"Measured",q5_d:'Approval parity by group + disparate-impact ratio. We <b>report the gap honestly</b>.',
+      fit_h:"Built for P4's constraints",
+      f1_t:"Less paperwork",f1_d:"Reads Open Banking data instead of asking the borrower to gather and upload documents.",
+      f2_t:"Approved-partner ready",f2_d:'Consumes data from an approved fintech / Open Banking partner — <b>no direct data-pulling</b>.',
+      f3_t:"Sandbox-ready",f3_d:"Consent + immutable audit trail + human authority + explainable outputs — for a regulatory sandbox.",
+      pr1:"Deterministic",pr2:"Explainable",pr3:"Human-in-the-loop",pr4:"Fraud = veto",pr5:"Missing ≠ bad",pr6:"Point-in-time",
+      note:'<b>Prototype on synthetic data</b> — demonstrates the mechanism and explainability; real predictive accuracy needs real lending outcomes.'},
+    vi:{brand_tag:"Trí tuệ Tin cậy có thể giải thích cho cho vay bằng AI",
+      thesis:'Chấm điểm người vay hồ sơ mỏng từ <b>hành vi Open Banking</b>, không phải lịch sử tín dụng — nhân viên thẩm định nhận Chấp thuận / Thẩm định / Từ chối <b>minh bạch</b> trong chưa đầy một giây. <span class="hl">AI đề xuất · con người quyết định.</span>',
+      proof_k:"Luận điểm cốt lõi, đã chứng minh",proof_bureau:"CIC truyền thống",proof_reject:"TỪ CHỐI",proof_reject_why:"không có hồ sơ tín dụng",
+      proof_tie:"TrustLink TIE",proof_approve:"CHẤP THUẬN",proof_approve_why:"dựa trên hành vi đáng tin",
+      aom_h:"Ms. Aom · freelancer hồ sơ mỏng",aom_sub:"/ 1000 · Mạnh · tin cậy 0.86 · gian lận Thấp",
+      aom_dec:'Chấp thuận (điều chỉnh) → <b>45.000.000 VND</b> / 12 tháng',
+      op_income:"Thu nhập 70",op_payment:"Thanh toán 88",op_savings:"Tiết kiệm 80",op_trend:"Xu hướng 52",op_life:"Chi tiêu 76",op_id:"Danh tính 80",
+      qh:"Câu hỏi giám khảo thường hỏi — trả lời bằng số liệu",
+      q1_q:"Độ chính xác thế nào?",q1_b:"AUC 0.64",q1_d:'Trên 800 hồ sơ mô phỏng, <b>nhóm Yếu vỡ nợ gấp ~3× nhóm Mạnh</b> (7% → 23%).',
+      q2_q:"Vì sao là 742? Có phải tự chọn?",q2_b:"742 ✓ theo dữ liệu",q2_d:'Cho dữ liệu kết quả, engine <b>tự học trọng số</b> và cho Aom <b>739</b> — dữ liệu xác nhận con số 742.',
+      q7_q:"Thật hay chỉ là mô hình mẫu?",q7_b:"Hệ thống thật",q7_d:'Chạy trên <b>engine Python thật sau một API</b> (phía máy chủ) — có dự phòng chạy trên trình duyệt để chia sẻ.',
+      q3_q:"Chặn gian lận thế nào?",q3_b:"Bắt 100%",q3_d:'Quyền <b>phủ quyết</b> độc lập + điểm gian lận cộng dồn. Bắt 100% hồ sơ khai khống thu nhập.',
+      q4_q:"Có cho vay quá mức không?",q4_b:"DSR ≤ 45%",q4_d:'Kiểm tra khả năng trả nợ giới hạn hạn mức — đề nghị 100M có nợ cũ bị giảm còn <b>20M</b>.',
+      q5_q:"Có công bằng không?",q5_b:"Có đo lường",q5_d:'Tỷ lệ duyệt theo nhóm + chỉ số tác động chênh lệch. Chúng tôi <b>báo cáo khoảng cách trung thực</b>.',
+      fit_h:"Đáp ứng ràng buộc của P4",
+      f1_t:"Ít giấy tờ",f1_d:"Đọc dữ liệu Open Banking thay vì yêu cầu người vay thu thập và tải lên tài liệu.",
+      f2_t:"Sẵn sàng với partner",f2_d:'Dùng dữ liệu từ đối tác fintech / Open Banking được cấp phép — <b>không lấy dữ liệu trực tiếp</b>.',
+      f3_t:"Sẵn sàng cho sandbox",f3_d:"Đồng ý + nhật ký kiểm toán bất biến + quyền quyết định của con người + giải thích được — cho sandbox pháp lý.",
+      pr1:"Tất định",pr2:"Giải thích được",pr3:"Con người quyết định",pr4:"Gian lận = phủ quyết",pr5:"Thiếu ≠ xấu",pr6:"Đúng thời điểm",
+      note:'<b>Nguyên mẫu trên dữ liệu mô phỏng</b> — minh hoạ cơ chế và tính giải thích; độ chính xác thực cần dữ liệu cho vay thực.'},
+    th:{brand_tag:"Trust Intelligence ที่อธิบายได้ สำหรับสินเชื่อด้วย AI",
+      thesis:'ให้คะแนนผู้กู้ thin-file จาก <b>พฤติกรรม Open Banking</b> ไม่ใช่ประวัติเครดิต — เจ้าหน้าที่ได้ผล อนุมัติ / ตรวจเพิ่ม / ไม่อนุมัติ ที่ <b>โปร่งใส</b> ในไม่ถึงวินาที <span class="hl">AI แนะนำ · คนตัดสิน</span>',
+      proof_k:"หัวใจที่พิสูจน์แล้ว",proof_bureau:"เครดิตบูโรแบบเดิม",proof_reject:"ไม่อนุมัติ",proof_reject_why:"ไม่มีประวัติเครดิต",
+      proof_tie:"TrustLink TIE",proof_approve:"อนุมัติ",proof_approve_why:"จากพฤติกรรมที่น่าเชื่อถือ",
+      aom_h:"Ms. Aom · ฟรีแลนซ์ thin-file",aom_sub:"/ 1000 · แข็งแรง · เชื่อมั่น 0.86 · ทุจริต ต่ำ",
+      aom_dec:'อนุมัติ (ปรับวงเงิน) → <b>45,000,000 VND</b> / 12 เดือน',
+      op_income:"รายได้ 70",op_payment:"ชำระเงิน 88",op_savings:"ออม 80",op_trend:"แนวโน้ม 52",op_life:"ไลฟ์สไตล์ 76",op_id:"ตัวตน 80",
+      qh:"คำถามที่กรรมการถาม — ตอบด้วยตัวเลข",
+      q1_q:"แม่นแค่ไหน?",q1_b:"AUC 0.64",q1_d:'จาก 800 เคสจำลอง <b>กลุ่ม Weak ผิดนัด ~3 เท่าของ Strong</b> (7% → 23%)',
+      q2_q:"ทำไม 742? ตั้งเองหรือ?",q2_b:"742 ✓ ตามข้อมูล",q2_d:'ป้อนผลจริง engine <b>เรียนน้ำหนักเอง</b> ได้ Aom <b>739</b> — ข้อมูลยืนยันเลข 742',
+      q7_q:"ของจริงหรือ mockup?",q7_b:"ระบบจริง",q7_d:'รันบน <b>engine Python จริงหลัง API</b> (ฝั่งเซิร์ฟเวอร์) — มี fallback ในเบราว์เซอร์สำหรับแชร์',
+      q3_q:"กันโกงยังไง?",q3_b:"จับได้ 100%",q3_d:'<b>veto</b> อิสระ + คะแนนทุจริตสะสม จับผู้แจ้งรายได้เกินจริงได้ 100%',
+      q4_q:"ปล่อยเกินตัวไหม?",q4_b:"DSR ≤ 45%",q4_d:'ทดสอบภาระหนี้คุมวงเงิน — ขอ 100M ที่มีหนี้เดิม ถูกลดเหลือ <b>20M</b>',
+      q5_q:"ลำเอียงไหม?",q5_b:"วัดได้",q5_d:'อัตราอนุมัติแยกกลุ่ม + disparate-impact เรา <b>รายงาน gap ตรงๆ</b>',
+      fit_h:"ออกแบบตามข้อจำกัดของ P4",
+      f1_t:"ลดเอกสาร",f1_d:"อ่านข้อมูล Open Banking แทนให้ผู้กู้รวบรวมและอัปโหลดเอกสาร",
+      f2_t:"พร้อมต่อ partner",f2_d:'รับข้อมูลจาก fintech / Open Banking partner ที่ได้รับอนุญาต — <b>ไม่ดึงข้อมูลตรง</b>',
+      f3_t:"พร้อมเข้า sandbox",f3_d:"consent + audit trail + คนตัดสิน + อธิบายได้ — สำหรับ regulatory sandbox",
+      pr1:"กำหนดได้",pr2:"อธิบายได้",pr3:"คนอยู่ในลูป",pr4:"ทุจริต = veto",pr5:"ไม่มีข้อมูล ≠ แย่",pr6:"Point-in-time",
+      note:'<b>Prototype บนข้อมูล synthetic</b> — สาธิตกลไกและการอธิบายได้; ความแม่นจริงต้องใช้ข้อมูลสินเชื่อจริง'},
+    ko:{brand_tag:"AI 여신을 위한 설명가능한 신뢰 인텔리전스",
+      thesis:'얇은 신용 파일 차주를 신용 기록이 아닌 <b>오픈뱅킹 행동</b>으로 평가 — 심사역은 1초 안에 <b>투명한</b> 승인 / 심사 / 거절을 받습니다. <span class="hl">AI 권고 · 사람 결정.</span>',
+      proof_k:"핵심 주장, 입증됨",proof_bureau:"기존 신용평가",proof_reject:"거절",proof_reject_why:"신용 기록 없음",
+      proof_tie:"TrustLink TIE",proof_approve:"승인",proof_approve_why:"신뢰 행동 기반",
+      aom_h:"Ms. Aom · 얇은 파일 프리랜서",aom_sub:"/ 1000 · 우수 · 신뢰도 0.86 · 사기 낮음",
+      aom_dec:'승인 (조정) → <b>45,000,000 VND</b> / 12개월',
+      op_income:"소득 70",op_payment:"결제 88",op_savings:"저축 80",op_trend:"추세 52",op_life:"생활 76",op_id:"신원 80",
+      qh:"심사위원이 묻는 질문 — 숫자로 답합니다",
+      q1_q:"얼마나 정확한가요?",q1_b:"AUC 0.64",q1_d:'합성 800명 기준, <b>취약 등급 부도율이 우수 등급의 약 3배</b> (7% → 23%).',
+      q2_q:"왜 742? 임의로 정했나요?",q2_b:"742 ✓ 데이터로",q2_d:'결과를 학습해 엔진이 <b>가중치를 학습</b>하고 Aom을 <b>739</b>로 산출 — 데이터가 742를 확인합니다.',
+      q7_q:"실제인가, 목업인가?",q7_b:"실제 시스템",q7_d:'실제 <b>Python 엔진이 API 뒤에서</b>(서버측) 구동 — 공유용 브라우저 폴백 포함.',
+      q3_q:"사기는 어떻게 막나요?",q3_b:"100% 적발",q3_d:'독립 <b>거부권</b> + 누적 사기 점수. 과다 신고 신청자 100% 적발.',
+      q4_q:"과다 대출인가요?",q4_b:"DSR ≤ 45%",q4_d:'부채상환 검사가 한도를 제한 — 기존 부채가 있는 1억 신청은 <b>2천만</b>으로 축소.',
+      q5_q:"공정한가요?",q5_b:"측정합니다",q5_d:'그룹별 승인 형평성 + 불균형 영향 비율. 격차를 <b>정직하게 보고</b>합니다.',
+      fit_h:"P4 제약에 맞춤 설계",
+      f1_t:"서류 감소",f1_d:"차주에게 서류 수집·업로드를 요구하는 대신 오픈뱅킹 데이터를 읽습니다.",
+      f2_t:"승인 파트너 대응",f2_d:'승인된 핀테크 / 오픈뱅킹 파트너 데이터 사용 — <b>직접 데이터 수집 없음</b>.',
+      f3_t:"샌드박스 준비",f3_d:"동의 + 불변 감사 추적 + 사람 권한 + 설명가능 출력 — 규제 샌드박스용.",
+      pr1:"결정론적",pr2:"설명가능",pr3:"휴먼 인 더 루프",pr4:"사기 = 거부권",pr5:"결측 ≠ 나쁨",pr6:"시점 정확성",
+      note:'<b>합성 데이터 기반 프로토타입</b> — 메커니즘과 설명가능성을 보여줍니다; 실제 예측 정확도는 실제 대출 결과가 필요합니다.'},
+    zh:{brand_tag:"面向 AI 信贷的可解释信任智能",
+      thesis:'用<b>开放银行行为</b>而非征信历史为薄档案借款人评分 — 审核员在一秒内获得<b>透明的</b>批准 / 复核 / 拒绝。<span class="hl">AI 建议 · 人来决定。</span>',
+      proof_k:"核心主张，已验证",proof_bureau:"传统征信",proof_reject:"拒绝",proof_reject_why:"无征信记录",
+      proof_tie:"TrustLink TIE",proof_approve:"批准",proof_approve_why:"基于可信行为",
+      aom_h:"Ms. Aom · 薄档案自由职业者",aom_sub:"/ 1000 · 强 · 置信度 0.86 · 欺诈 低",
+      aom_dec:'批准（调整）→ <b>45,000,000 VND</b> / 12 个月',
+      op_income:"收入 70",op_payment:"还款 88",op_savings:"储蓄 80",op_trend:"趋势 52",op_life:"消费 76",op_id:"身份 80",
+      qh:"评委常问的问题 — 用数字回答",
+      q1_q:"准确度如何？",q1_b:"AUC 0.64",q1_d:'在 800 个合成样本中，<b>弱档违约率约为强档的 3 倍</b>（7% → 23%）。',
+      q2_q:"为何是 742？是手动选的吗？",q2_b:"742 ✓ 由数据",q2_d:'输入真实结果，引擎<b>自动学习权重</b>，把 Aom 定为 <b>739</b> — 数据确认了 742。',
+      q7_q:"是真实系统还是样机？",q7_b:"真实系统",q7_d:'由真正的 <b>Python 引擎在 API 后端</b>（服务器侧）运行 — 并有浏览器回退用于分享。',
+      q3_q:"如何防欺诈？",q3_b:"100% 识别",q3_d:'独立<b>否决权</b> + 累加欺诈分。识别 100% 虚报收入的申请人。',
+      q4_q:"会过度放贷吗？",q4_b:"DSR ≤ 45%",q4_d:'偿债比测试限制额度 — 有存量债务的 1 亿申请被压到 <b>2 千万</b>。',
+      q5_q:"是否公平？",q5_b:"已度量",q5_d:'分组批准率 + 差别影响比。我们<b>如实报告差距</b>。',
+      fit_h:"为 P4 的约束而建",
+      f1_t:"减少纸质材料",f1_d:"读取开放银行数据，而非要求借款人收集并上传文件。",
+      f2_t:"对接授权合作方",f2_d:'使用授权的金融科技 / 开放银行合作方数据 — <b>不直接抓取数据</b>。',
+      f3_t:"沙盒就绪",f3_d:"同意 + 不可篡改审计 + 人工决策权 + 可解释输出 — 面向监管沙盒。",
+      pr1:"确定性",pr2:"可解释",pr3:"人在回路",pr4:"欺诈 = 否决",pr5:"缺失 ≠ 不良",pr6:"时点正确",
+      note:'<b>基于合成数据的原型</b> — 展示机制与可解释性；真实预测准确度需要真实放贷结果。'},
+    ja:{brand_tag:"AI 与信のための説明可能な信頼インテリジェンス",
+      thesis:'薄いファイルの借り手を信用履歴ではなく<b>オープンバンキングの行動</b>で採点 — 審査担当は1秒未満で<b>透明な</b>承認 / 審査 / 却下を得ます。<span class="hl">AI が推奨 · 人が決定。</span>',
+      proof_k:"中核主張、実証済み",proof_bureau:"従来の信用情報",proof_reject:"却下",proof_reject_why:"信用記録なし",
+      proof_tie:"TrustLink TIE",proof_approve:"承認",proof_approve_why:"信頼できる行動に基づく",
+      aom_h:"Ms. Aom · 薄いファイルのフリーランサー",aom_sub:"/ 1000 · 良好 · 信頼度 0.86 · 不正 低",
+      aom_dec:'承認（調整）→ <b>45,000,000 VND</b> / 12か月',
+      op_income:"収入 70",op_payment:"支払 88",op_savings:"貯蓄 80",op_trend:"傾向 52",op_life:"生活 76",op_id:"本人 80",
+      qh:"審査員の質問 — 数字で答えます",
+      q1_q:"精度は？",q1_b:"AUC 0.64",q1_d:'合成800件で、<b>脆弱ランクの延滞率は良好ランクの約3倍</b>（7% → 23%）。',
+      q2_q:"なぜ742？手動選択？",q2_b:"742 ✓ データで",q2_d:'実績を与えるとエンジンが<b>重みを学習</b>し Aom を <b>739</b> に — データが742を裏付けます。',
+      q7_q:"本物？モックアップ？",q7_b:"本物のシステム",q7_d:'実際の <b>Python エンジンが API の背後</b>（サーバ側）で稼働 — 共有用のブラウザ・フォールバック付き。',
+      q3_q:"不正はどう防ぐ？",q3_b:"100% 検知",q3_d:'独立した<b>拒否権</b> + 加算式の不正スコア。過大申告の申請を100%検知。',
+      q4_q:"過剰融資では？",q4_b:"DSR ≤ 45%",q4_d:'返済負担テストが上限を制限 — 既存債務のある1億の申請は <b>2千万</b> に減額。',
+      q5_q:"公平ですか？",q5_b:"測定します",q5_d:'グループ別承認率 + 不均衡影響比。ギャップを<b>正直に報告</b>します。',
+      fit_h:"P4 の制約に合わせて設計",
+      f1_t:"書類の削減",f1_d:"借り手に書類収集・アップロードを求めず、オープンバンキングデータを読み取ります。",
+      f2_t:"認可パートナー対応",f2_d:'認可されたフィンテック / オープンバンキングのパートナーデータを使用 — <b>直接のデータ取得なし</b>。',
+      f3_t:"サンドボックス対応",f3_d:"同意 + 改ざん不能な監査証跡 + 人の決定権 + 説明可能な出力 — 規制サンドボックス向け。",
+      pr1:"決定論的",pr2:"説明可能",pr3:"ヒューマン・イン・ザ・ループ",pr4:"不正 = 拒否権",pr5:"欠測 ≠ 不良",pr6:"時点正確性",
+      note:'<b>合成データのプロトタイプ</b> — 仕組みと説明可能性を示します；実際の予測精度には実際の融資実績が必要です。'},
+    id:{brand_tag:"Intelijen Kepercayaan yang dapat dijelaskan untuk pinjaman AI",
+      thesis:"Menilai peminjam berkas tipis dari <b>perilaku Open Banking</b>, bukan riwayat biro — penilai manusia mendapat keputusan <b>transparan</b> Setuju / Tinjau / Tolak dalam kurang dari satu detik. <span class='hl'>AI merekomendasikan · manusia memutuskan.</span>",
+      proof_k:"Klaim inti, terbukti",proof_bureau:"Biro tradisional",proof_reject:"TOLAK",proof_reject_why:"tanpa riwayat kredit",
+      proof_tie:"TrustLink TIE",proof_approve:"SETUJU",proof_approve_why:"berdasarkan perilaku tepercaya",
+      aom_h:"Ms. Aom · freelancer berkas tipis",aom_sub:"/ 1000 · Kuat · keyakinan 0.86 · penipuan Rendah",
+      aom_dec:"Setujui (disesuaikan) → <b>45.000.000 VND</b> / 12 bulan",
+      op_income:"Pendapatan 70",op_payment:"Pembayaran 88",op_savings:"Tabungan 80",op_trend:"Tren 52",op_life:"Gaya hidup 76",op_id:"Identitas 80",
+      qh:"Pertanyaan juri — dijawab dengan angka",
+      q1_q:"Seberapa akurat?",q1_b:"AUC 0.64",q1_d:"Dari 800 peminjam sintetis, <b>tingkat Lemah gagal bayar ~3× Kuat</b> (7% → 23%).",
+      q2_q:"Mengapa 742? Dipilih manual?",q2_b:"742 ✓ dari data",q2_d:"Diberi hasil, mesin <b>mempelajari bobot</b> dan menempatkan Aom di <b>739</b> — data mengonfirmasi 742.",
+      q7_q:"Nyata atau mockup?",q7_b:"Sistem nyata",q7_d:"Berjalan pada <b>mesin Python asli di balik API</b> (sisi server) — dengan fallback di peramban untuk berbagi.",
+      q3_q:"Bagaimana mencegah penipuan?",q3_b:"100% tertangkap",q3_d:"<b>Veto</b> independen + skor bertingkat. Menangkap 100% pemohon yang melebih-lebihkan pendapatan.",
+      q4_q:"Apakah pinjaman berlebihan?",q4_b:"DSR ≤ 45%",q4_d:"Uji rasio utang membatasi tawaran — permintaan 100M dengan utang lama dipangkas jadi <b>20M</b>.",
+      q5_q:"Apakah adil?",q5_b:"Terukur",q5_d:"Paritas persetujuan per kelompok + rasio dampak. Kami <b>melaporkan selisih dengan jujur</b>.",
+      fit_h:"Dibangun untuk kendala P4",
+      f1_t:"Lebih sedikit dokumen",f1_d:"Membaca data Open Banking alih-alih meminta peminjam mengumpulkan dan mengunggah dokumen.",
+      f2_t:"Siap mitra resmi",f2_d:"Menggunakan data dari mitra fintech / Open Banking resmi — <b>tanpa penarikan data langsung</b>.",
+      f3_t:"Siap sandbox",f3_d:"Persetujuan + jejak audit tak berubah + wewenang manusia + keluaran yang dapat dijelaskan — untuk sandbox regulasi.",
+      pr1:"Deterministik",pr2:"Dapat dijelaskan",pr3:"Manusia dalam lingkaran",pr4:"Penipuan = veto",pr5:"Kosong ≠ buruk",pr6:"Tepat waktu",
+      note:"<b>Prototipe pada data sintetis</b> — menunjukkan mekanisme dan keterjelasan; akurasi prediktif nyata butuh hasil pinjaman nyata."},
+    ms:{brand_tag:"Kecerdasan Kepercayaan boleh dijelaskan untuk pinjaman AI",
+      thesis:"Menilai peminjam fail nipis dari <b>tingkah laku Open Banking</b>, bukan sejarah biro — penilai manusia mendapat keputusan <b>telus</b> Lulus / Semak / Tolak dalam kurang satu saat. <span class='hl'>AI mengesyorkan · manusia memutuskan.</span>",
+      proof_k:"Dakwaan teras, terbukti",proof_bureau:"Biro tradisional",proof_reject:"TOLAK",proof_reject_why:"tiada sejarah kredit",
+      proof_tie:"TrustLink TIE",proof_approve:"LULUS",proof_approve_why:"berdasarkan tingkah laku dipercayai",
+      aom_h:"Ms. Aom · freelancer fail nipis",aom_sub:"/ 1000 · Kukuh · keyakinan 0.86 · penipuan Rendah",
+      aom_dec:"Luluskan (diselaraskan) → <b>45,000,000 VND</b> / 12 bulan",
+      op_income:"Pendapatan 70",op_payment:"Bayaran 88",op_savings:"Simpanan 80",op_trend:"Trend 52",op_life:"Gaya hidup 76",op_id:"Identiti 80",
+      qh:"Soalan juri — dijawab dengan angka",
+      q1_q:"Berapa tepat?",q1_b:"AUC 0.64",q1_d:"Daripada 800 peminjam sintetik, <b>peringkat Lemah mungkir ~3× Kukuh</b> (7% → 23%).",
+      q2_q:"Mengapa 742? Dipilih manual?",q2_b:"742 ✓ oleh data",q2_d:"Diberi hasil, enjin <b>mempelajari pemberat</b> dan meletakkan Aom pada <b>739</b> — data mengesahkan 742.",
+      q7_q:"Nyata atau mockup?",q7_b:"Sistem sebenar",q7_d:"Berjalan pada <b>enjin Python sebenar di sebalik API</b> (pihak pelayan) — dengan sandaran pelayar untuk perkongsian.",
+      q3_q:"Bagaimana halang penipuan?",q3_b:"100% ditangkap",q3_d:"<b>Veto</b> bebas + skor berperingkat. Menangkap 100% pemohon yang melebihkan pendapatan.",
+      q4_q:"Pinjaman berlebihan?",q4_b:"DSR ≤ 45%",q4_d:"Ujian nisbah hutang mengehadkan tawaran — permohonan 100M dengan hutang sedia ada dikurangkan kepada <b>20M</b>.",
+      q5_q:"Adakah adil?",q5_b:"Diukur",q5_d:"Pariti kelulusan mengikut kumpulan + nisbah kesan. Kami <b>melaporkan jurang dengan jujur</b>.",
+      fit_h:"Dibina untuk kekangan P4",
+      f1_t:"Kurang kertas kerja",f1_d:"Membaca data Open Banking dan bukannya meminta peminjam mengumpul dan memuat naik dokumen.",
+      f2_t:"Sedia rakan sah",f2_d:"Menggunakan data daripada rakan fintech / Open Banking yang sah — <b>tiada tarikan data langsung</b>.",
+      f3_t:"Sedia sandbox",f3_d:"Persetujuan + jejak audit kekal + kuasa manusia + output boleh dijelaskan — untuk sandbox kawal selia.",
+      pr1:"Berketentuan",pr2:"Boleh dijelaskan",pr3:"Manusia dalam gelung",pr4:"Penipuan = veto",pr5:"Kosong ≠ buruk",pr6:"Tepat masa",
+      note:"<b>Prototaip pada data sintetik</b> — menunjukkan mekanisme dan keterjelasan; ketepatan ramalan sebenar memerlukan hasil pinjaman sebenar."},
+    fil:{brand_tag:"Naipaliliwanag na Trust Intelligence para sa AI lending",
+      thesis:"Iskoran ang mga manipis-na-file na nanghihiram batay sa <b>gawi sa Open Banking</b>, hindi kasaysayan ng bureau — nakakakuha ang tao ng <b>malinaw na</b> Aprubado / Rebyu / Tanggihan nang wala pang isang segundo. <span class='hl'>Nagrerekomenda ang AI · nagdedesisyon ang tao.</span>",
+      proof_k:"Pangunahing paninindigan, napatunayan",proof_bureau:"Tradisyunal na bureau",proof_reject:"TINANGGIHAN",proof_reject_why:"walang kasaysayan ng kredito",
+      proof_tie:"TrustLink TIE",proof_approve:"APRUBADO",proof_approve_why:"batay sa mapagkakatiwalaang gawi",
+      aom_h:"Ms. Aom · manipis-na-file na freelancer",aom_sub:"/ 1000 · Malakas · kumpiyansa 0.86 · pandaraya Mababa",
+      aom_dec:"Aprubahan (inayos) → <b>45,000,000 VND</b> / 12 buwan",
+      op_income:"Kita 70",op_payment:"Bayad 88",op_savings:"Ipon 80",op_trend:"Takbo 52",op_life:"Pamumuhay 76",op_id:"Pagkakakilanlan 80",
+      qh:"Mga tanong ng hurado — sinasagot ng numero",
+      q1_q:"Gaano katumpak?",q1_b:"AUC 0.64",q1_d:"Sa 800 sintetikong nanghihiram, <b>ang Mahinang antas ay ~3× mas madalas mag-default kaysa Malakas</b> (7% → 23%).",
+      q2_q:"Bakit 742? Manu-manong pinili?",q2_b:"742 ✓ ayon sa data",q2_d:"Binigyan ng resulta, <b>natututo ang makina ng timbang</b> at inilagay si Aom sa <b>739</b> — kinukumpirma ng data ang 742.",
+      q7_q:"Totoo o mockup?",q7_b:"Tunay na sistema",q7_d:"Tumatakbo sa aktwal na <b>Python engine sa likod ng live na API</b> (server-side) — may in-browser fallback para sa pagbabahagi.",
+      q3_q:"Paano pinipigil ang pandaraya?",q3_b:"100% nahuli",q3_d:"Independiyenteng <b>veto</b> + baitang na iskor. Nahuli ang 100% ng nag-sobra sa deklarasyon ng kita.",
+      q4_q:"Sobra ba ang pautang?",q4_b:"DSR ≤ 45%",q4_d:"Nililimitahan ng debt-service test ang alok — ang 100M na hiling na may utang ay binawasan sa <b>20M</b>.",
+      q5_q:"Patas ba?",q5_b:"Sinusukat",q5_d:"Pagkakapantay ng pag-apruba kada grupo + disparate-impact ratio. <b>Tapat naming iniuulat ang agwat</b>.",
+      fit_h:"Ginawa para sa mga hadlang ng P4",
+      f1_t:"Mas kaunting papeles",f1_d:"Binabasa ang datos ng Open Banking sa halip na hilingin sa nanghihiram na mangolekta at mag-upload ng dokumento.",
+      f2_t:"Handa sa aprubadong partner",f2_d:"Gumagamit ng datos mula sa aprubadong fintech / Open Banking partner — <b>walang direktang pagkuha ng datos</b>.",
+      f3_t:"Handa sa sandbox",f3_d:"Pahintulot + di-mababagong audit trail + awtoridad ng tao + naipaliliwanag na output — para sa regulatory sandbox.",
+      pr1:"Deterministiko",pr2:"Naipaliliwanag",pr3:"Tao sa loop",pr4:"Pandaraya = veto",pr5:"Walang datos ≠ masama",pr6:"Tama sa oras",
+      note:"<b>Prototype sa sintetikong datos</b> — ipinapakita ang mekanismo at pagkanaipaliwanag; ang totoong katumpakan ay nangangailangan ng totoong resulta ng pagpapautang."},
+    fr:{brand_tag:"Intelligence de confiance explicable pour le crédit assisté par IA",
+      thesis:"Évaluez les emprunteurs à dossier mince selon le <b>comportement Open Banking</b>, pas l'historique du bureau — l'analyste obtient une décision <b>transparente</b> Accorder / Examiner / Refuser en moins d'une seconde. <span class='hl'>L'IA recommande · l'humain décide.</span>",
+      proof_k:"Argument central, prouvé",proof_bureau:"Bureau traditionnel",proof_reject:"REFUSÉ",proof_reject_why:"aucun historique de crédit",
+      proof_tie:"TrustLink TIE",proof_approve:"ACCORDÉ",proof_approve_why:"selon un comportement fiable",
+      aom_h:"Ms. Aom · indépendante à dossier mince",aom_sub:"/ 1000 · Fort · confiance 0.86 · fraude Faible",
+      aom_dec:"Accorder (ajusté) → <b>45 000 000 VND</b> / 12 mois",
+      op_income:"Revenu 70",op_payment:"Paiement 88",op_savings:"Épargne 80",op_trend:"Tendance 52",op_life:"Train de vie 76",op_id:"Identité 80",
+      qh:"Les questions du jury — répondues par des chiffres",
+      q1_q:"Quelle précision ?",q1_b:"AUC 0.64",q1_d:"Sur 800 emprunteurs synthétiques, <b>le niveau Faible fait défaut ~3× plus que Fort</b> (7% → 23%).",
+      q2_q:"Pourquoi 742 ? Choisi à la main ?",q2_b:"742 ✓ par les données",q2_d:"Nourri de résultats, le moteur <b>apprend les poids</b> et place Aom à <b>739</b> — les données confirment 742.",
+      q7_q:"Réel ou maquette ?",q7_b:"Système réel",q7_d:"Tourne sur le <b>vrai moteur Python derrière une API</b> (côté serveur) — avec un repli navigateur pour le partage.",
+      q3_q:"Comment stopper la fraude ?",q3_b:"100% détectés",q3_d:"<b>Veto</b> indépendant + score progressif. 100% des sur-déclarations de revenu détectées.",
+      q4_q:"Prêtez-vous trop ?",q4_b:"DSR ≤ 45%",q4_d:"Un test d'endettement plafonne l'offre — une demande de 100M avec dette existante tombe à <b>20M</b>.",
+      q5_q:"Est-ce équitable ?",q5_b:"Mesurée",q5_d:"Parité d'approbation par groupe + ratio d'impact. Nous <b>rapportons l'écart honnêtement</b>.",
+      fit_h:"Conçu pour les contraintes de P4",
+      f1_t:"Moins de paperasse",f1_d:"Lit les données Open Banking au lieu de demander à l'emprunteur de rassembler et téléverser des documents.",
+      f2_t:"Prêt pour partenaire agréé",f2_d:"Utilise les données d'un partenaire fintech / Open Banking agréé — <b>sans extraction directe</b>.",
+      f3_t:"Prêt pour le bac à sable",f3_d:"Consentement + piste d'audit inaltérable + autorité humaine + sorties explicables — pour un bac à sable réglementaire.",
+      pr1:"Déterministe",pr2:"Explicable",pr3:"Humain dans la boucle",pr4:"Fraude = veto",pr5:"Manquant ≠ mauvais",pr6:"Ponctuel",
+      note:"<b>Prototype sur données synthétiques</b> — démontre le mécanisme et l'explicabilité ; la précision réelle exige de vrais résultats de prêt."},
+    es:{brand_tag:"Inteligencia de Confianza explicable para préstamos con IA",
+      thesis:"Evalúa a prestatarios de historial escaso por el <b>comportamiento de Open Banking</b>, no por el historial del buró — el analista obtiene un veredicto <b>transparente</b> Aprobar / Revisar / Rechazar en menos de un segundo. <span class='hl'>La IA recomienda · el humano decide.</span>",
+      proof_k:"Afirmación central, probada",proof_bureau:"Buró tradicional",proof_reject:"RECHAZAR",proof_reject_why:"sin historial de crédito",
+      proof_tie:"TrustLink TIE",proof_approve:"APROBAR",proof_approve_why:"por comportamiento confiable",
+      aom_h:"Ms. Aom · freelance de historial escaso",aom_sub:"/ 1000 · Fuerte · confianza 0.86 · fraude Bajo",
+      aom_dec:"Aprobar (ajustado) → <b>45.000.000 VND</b> / 12 meses",
+      op_income:"Ingresos 70",op_payment:"Pago 88",op_savings:"Ahorro 80",op_trend:"Tendencia 52",op_life:"Estilo de vida 76",op_id:"Identidad 80",
+      qh:"Las preguntas del jurado — respondidas con números",
+      q1_q:"¿Qué tan preciso es?",q1_b:"AUC 0.64",q1_d:"En 800 prestatarios sintéticos, <b>el nivel Débil incumple ~3× más que el Fuerte</b> (7% → 23%).",
+      q2_q:"¿Por qué 742? ¿Elegido a mano?",q2_b:"742 ✓ por los datos",q2_d:"Con resultados, el motor <b>aprende los pesos</b> y sitúa a Aom en <b>739</b> — los datos confirman 742.",
+      q7_q:"¿Real o maqueta?",q7_b:"Sistema real",q7_d:"Corre sobre el <b>motor Python real detrás de una API</b> (lado servidor) — con respaldo en el navegador para compartir.",
+      q3_q:"¿Cómo frenan el fraude?",q3_b:"100% detectados",q3_d:"<b>Veto</b> independiente + puntuación progresiva. 100% de sobredeclaraciones de ingreso detectadas.",
+      q4_q:"¿Prestan de más?",q4_b:"DSR ≤ 45%",q4_d:"Una prueba de endeudamiento limita la oferta — una solicitud de 100M con deuda existente baja a <b>20M</b>.",
+      q5_q:"¿Es justo?",q5_b:"Medida",q5_d:"Paridad de aprobación por grupo + ratio de impacto. <b>Informamos la brecha con honestidad</b>.",
+      fit_h:"Construido para las restricciones de P4",
+      f1_t:"Menos papeleo",f1_d:"Lee datos de Open Banking en lugar de pedir al prestatario reunir y subir documentos.",
+      f2_t:"Listo para socio autorizado",f2_d:"Usa datos de un socio fintech / Open Banking autorizado — <b>sin extracción directa</b>.",
+      f3_t:"Listo para sandbox",f3_d:"Consentimiento + registro de auditoría inalterable + autoridad humana + salidas explicables — para un sandbox regulatorio.",
+      pr1:"Determinista",pr2:"Explicable",pr3:"Humano en el bucle",pr4:"Fraude = veto",pr5:"Faltante ≠ malo",pr6:"En el momento",
+      note:"<b>Prototipo con datos sintéticos</b> — demuestra el mecanismo y la explicabilidad; la precisión real requiere resultados reales de préstamo."},
+    de:{brand_tag:"Erklärbare Trust Intelligence für KI-gestützte Kreditvergabe",
+      thesis:"Bewertet Kreditnehmer mit dünner Akte anhand des <b>Open-Banking-Verhaltens</b> statt der Auskunftei-Historie — der Prüfer erhält in unter einer Sekunde ein <b>transparentes</b> Genehmigen / Prüfen / Ablehnen. <span class='hl'>KI empfiehlt · der Mensch entscheidet.</span>",
+      proof_k:"Kernaussage, belegt",proof_bureau:"Traditionelle Auskunftei",proof_reject:"ABGELEHNT",proof_reject_why:"keine Kredithistorie",
+      proof_tie:"TrustLink TIE",proof_approve:"GENEHMIGT",proof_approve_why:"aufgrund vertrauenswürdigen Verhaltens",
+      aom_h:"Ms. Aom · Freiberuflerin mit dünner Akte",aom_sub:"/ 1000 · Stark · Konfidenz 0.86 · Betrug Niedrig",
+      aom_dec:"Genehmigen (angepasst) → <b>45.000.000 VND</b> / 12 Monate",
+      op_income:"Einkommen 70",op_payment:"Zahlung 88",op_savings:"Ersparnis 80",op_trend:"Trend 52",op_life:"Lebensstil 76",op_id:"Identität 80",
+      qh:"Die Fragen der Jury — mit Zahlen beantwortet",
+      q1_q:"Wie genau ist es?",q1_b:"AUC 0.64",q1_d:"Bei 800 synthetischen Kreditnehmern fällt die <b>Stufe Schwach ~3× häufiger aus als Stark</b> (7% → 23%).",
+      q2_q:"Warum 742? Von Hand gewählt?",q2_b:"742 ✓ per Daten",q2_d:"Mit Ergebnissen <b>lernt die Engine die Gewichte</b> und verortet Aom bei <b>739</b> — die Daten bestätigen 742.",
+      q7_q:"Echt oder Attrappe?",q7_b:"Echtes System",q7_d:"Läuft auf der echten <b>Python-Engine hinter einer API</b> (serverseitig) — mit Browser-Fallback zum Teilen.",
+      q3_q:"Wie stoppen Sie Betrug?",q3_b:"100% erkannt",q3_d:"Unabhängiges <b>Veto</b> + gestufter Score. 100% der Einkommens-Überangaben erkannt.",
+      q4_q:"Vergeben Sie zu viel?",q4_b:"DSR ≤ 45%",q4_d:"Ein Schuldendiensttest begrenzt das Angebot — eine 100M-Anfrage mit Altschulden sinkt auf <b>20M</b>.",
+      q5_q:"Ist es fair?",q5_b:"Gemessen",q5_d:"Genehmigungsparität nach Gruppe + Ungleichheitsquote. Wir <b>berichten die Lücke ehrlich</b>.",
+      fit_h:"Für die Vorgaben von P4 gebaut",
+      f1_t:"Weniger Papierkram",f1_d:"Liest Open-Banking-Daten, statt den Kreditnehmer Dokumente sammeln und hochladen zu lassen.",
+      f2_t:"Bereit für zugelassene Partner",f2_d:"Nutzt Daten eines zugelassenen Fintech-/Open-Banking-Partners — <b>kein direktes Datenabrufen</b>.",
+      f3_t:"Sandbox-bereit",f3_d:"Einwilligung + unveränderliches Prüfprotokoll + menschliche Autorität + erklärbare Ausgaben — für eine regulatorische Sandbox.",
+      pr1:"Deterministisch",pr2:"Erklärbar",pr3:"Mensch in der Schleife",pr4:"Betrug = Veto",pr5:"Fehlend ≠ schlecht",pr6:"Zeitpunktgenau",
+      note:"<b>Prototyp auf synthetischen Daten</b> — zeigt Mechanismus und Erklärbarkeit; echte Vorhersagegenauigkeit braucht echte Kreditergebnisse."}
+  };
+  function T(k){var d=I18N[LANG]||I18N.en;return (k in d)?d[k]:(I18N.en[k]||k);}
+  function applyLang(){
+    document.documentElement.setAttribute("lang",LANG);
+    var els=document.querySelectorAll("[data-i18n]");
+    for(var i=0;i<els.length;i++){els[i].innerHTML=T(els[i].getAttribute("data-i18n"));}
+    var cur=document.getElementById("langcur"); if(cur) cur.textContent=langText(LANG);
+    var lb=document.querySelectorAll("#langmenu button");
+    for(var j=0;j<lb.length;j++){lb[j].classList.toggle("on",lb[j].getAttribute("data-l")===LANG);}
+  }
+  var langbtn=document.getElementById("langbtn"),langmenu=document.getElementById("langmenu"),langsel=document.getElementById("langsel");
+  function closeLangMenu(){langmenu.hidden=true;langbtn.setAttribute("aria-expanded","false");}
+  LANGS.forEach(function(L){var b=document.createElement("button");b.type="button";b.setAttribute("role","option");
+    b.setAttribute("data-l",L[0]);b.innerHTML='<span class="fl">'+L[1]+'</span> '+L[2];
+    b.onclick=function(){LANG=L[0];applyLang();closeLangMenu();};langmenu.appendChild(b);});
+  langbtn.addEventListener("click",function(e){e.stopPropagation();
+    if(langmenu.hidden){langmenu.hidden=false;langbtn.setAttribute("aria-expanded","true");}else{closeLangMenu();}});
+  document.addEventListener("click",function(e){if(!langsel.contains(e.target))closeLangMenu();});
+  applyLang();
+})();
+</script>

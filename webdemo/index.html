@@ -1,0 +1,1183 @@
+<h1 class="sr-only">TrustLink AI — load an applicant file, generate a lending verdict</h1>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <div>
+        <div class="bname">TrustLink&nbsp;AI</div>
+        <div class="btag" data-i18n="brand_tag">Trust Intelligence · Underwriting Console</div>
+      </div>
+    </div>
+    <div class="langsel" id="langsel">
+      <button type="button" id="langbtn" class="langbtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+        <span id="langcur"></span><span class="caret" aria-hidden="true">▾</span>
+      </button>
+      <div id="langmenu" class="langmenu" role="listbox" hidden></div>
+    </div>
+  </header>
+
+  <!-- INTAKE -->
+  <section class="intake" aria-label="Load applicant file">
+    <div class="panel-h" data-i18n="panel_applicant">Applicant file</div>
+    <p class="lead" data-i18n="lead">Load one applicant's data (an .md file from the bank / Open Banking) and generate a lending verdict.</p>
+
+    <div id="drop" class="drop" tabindex="0" role="button">
+      <span class="drop-ic" aria-hidden="true">＋</span>
+      <div class="drop-t" data-i18n="drop_title">Drag &amp; drop a .md applicant file</div>
+      <div class="drop-s"><span data-i18n="drop_or">or</span> <button type="button" id="pick" class="linkbtn" data-i18n="drop_choose">choose a file</button></div>
+      <input id="file" type="file" accept=".md,.markdown,.txt" hidden>
+    </div>
+
+    <div class="or"><span data-i18n="or_paste">or paste the file contents</span></div>
+    <textarea id="paste" spellcheck="false"></textarea>
+
+    <div class="actions">
+      <button id="gen" class="run" data-i18n="btn_generate">Generate Report</button>
+      <button id="example" type="button" class="linkbtn" data-i18n="btn_example">Try an example</button>
+    </div>
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+    <div id="backend" class="backend" aria-live="polite"></div>
+  </section>
+
+  <!-- REPORT -->
+  <section id="report" class="report" aria-label="Verdict report" hidden>
+    <div class="verdict" id="verdict">
+      <div class="v-badge" id="v-badge"><span class="v-ic" id="v-ic"></span><span id="v-word"></span></div>
+      <div class="v-main">
+        <div class="v-th" id="v-th"></div>
+        <div class="v-sub" id="v-sub"></div>
+      </div>
+      <div class="v-amt" id="v-amt"></div>
+    </div>
+
+    <div class="score-row">
+      <div class="gauge">
+        <svg viewBox="0 0 132 132" role="img" aria-label="Trust score">
+          <circle cx="66" cy="66" r="54" class="g-track"></circle>
+          <circle cx="66" cy="66" r="54" class="g-arc" id="g-arc" transform="rotate(-90 66 66)"></circle>
+          <text x="66" y="62" class="g-num" id="g-num">—</text>
+          <text x="66" y="82" class="g-max">/ 1000</text>
+        </svg>
+      </div>
+      <div class="score-meta">
+        <div class="meta-line"><span data-i18n="m_tier">Tier</span><b id="m-tier">—</b></div>
+        <div class="meta-line"><span><span data-i18n="m_conf">Confidence</span> <span class="tip" id="conf-tip" tabindex="0" role="img" aria-label="About confidence">&#9432;</span></span><b id="m-conf">—</b></div>
+        <div class="meta-line"><span data-i18n="m_fraud">Fraud veto</span><b id="m-fraud">—</b></div>
+        <div class="conf-hint" id="conf-hint"></div>
+      </div>
+    </div>
+
+    <div class="who" id="who"></div>
+
+    <div class="block cmp">
+      <div class="block-h"><span data-i18n="cmp_h">Traditional bureau vs TrustLink AI</span> <span class="sub" data-i18n="cmp_sub">· why alternative data matters</span></div>
+      <div class="cmp-grid" id="cmp-grid"></div>
+    </div>
+
+    <div class="block">
+      <div class="block-h"><span data-i18n="dims_h">Trust dimensions</span> <span class="sub" data-i18n="dims_sub">subscore · weight · contribution</span></div>
+      <div id="dims"></div>
+      <div class="veto-note" data-i18n="veto_note">Fraud is an independent veto — a high score can't buy back a fraud signal.</div>
+    </div>
+
+    <div class="block two-col">
+      <div>
+        <div class="block-h ok-h" data-i18n="pos_h">Positive signals</div>
+        <ul class="facts ok" id="pos"></ul>
+      </div>
+      <div>
+        <div class="block-h risk-h" data-i18n="risk_h">Risk signals</div>
+        <ul class="facts risk" id="risk"></ul>
+      </div>
+    </div>
+
+    <div class="block afford">
+      <div class="block-h"><span data-i18n="afford_h">Affordability</span> <span class="sub" data-i18n="afford_sub">· capacity, separate from trust</span></div>
+      <div class="af-grid" id="af-grid"></div>
+    </div>
+
+    <div class="block gov" id="gov" hidden>
+      <div class="block-h"><span data-i18n="gov_h">Data governance &amp; provenance</span> <span class="sub" data-i18n="gov_sub">· sandbox: approved partner · consent · corroboration · audit</span></div>
+      <div class="gov-grid" id="gov-grid"></div>
+    </div>
+  </section>
+
+  <footer class="foot" data-i18n="footer">Deterministic engine · figures compute live in your browser.</footer>
+</div>
+
+<style>
+:root{
+  --page:#f3f4f7; --card:#ffffff; --soft:#f6f8fc; --line:#e7eaef;
+  --ink:#17181c; --mut:#6b7280; --faint:#a2a8b2;
+  --blue:#2b6be4; --blue-ink:#1f5ad0; --blue-soft:#e9f0fd;
+  --ok:#12b76a; --ok-bg:#e7f7ef; --warn:#e8930c; --warn-bg:#fdf3e2; --bad:#e5484d; --bad-bg:#fdeceb;
+  --track:#e9edf3; --shadow:0 1px 2px rgba(20,30,60,.04),0 6px 20px rgba(20,30,60,.06);
+  --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",Roboto,"Noto Sans",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.app{font-family:var(--sans);color:var(--ink);background:var(--page);max-width:740px;margin:0 auto;
+  padding:16px;display:flex;flex-direction:column;gap:16px;-webkit-font-smoothing:antialiased}
+.app :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:8px}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;gap:11px;align-items:center}
+.mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#2b6be4,#37c0ea);display:inline-block}
+.bname{font-weight:800;font-size:17px;letter-spacing:-.02em;color:var(--blue-ink)}
+.btag{font-size:11.5px;color:var(--mut)}
+
+.langsel{position:relative}
+.langbtn{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:8px 12px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--ink);
+  cursor:pointer;box-shadow:var(--shadow)}
+.langbtn:hover{border-color:var(--blue)}
+.caret{color:var(--faint);font-size:10px}
+.langmenu{position:absolute;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);
+  border-radius:12px;box-shadow:0 8px 28px rgba(20,30,60,.14);padding:5px;min-width:180px;z-index:30;
+  max-height:280px;overflow:auto}
+.langmenu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;
+  border-radius:8px;padding:9px 11px;font-family:var(--sans);font-size:13.5px;color:var(--ink);cursor:pointer}
+.langmenu button:hover{background:var(--soft)}
+.langmenu button.on{background:var(--blue-soft);color:var(--blue);font-weight:700}
+.langmenu .fl{font-size:16px;line-height:1}
+
+.intake{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.panel-h{font-weight:700;font-size:14px;margin-bottom:6px}
+.lead{color:var(--mut);font-size:13px;margin:0 0 14px}
+
+.drop{border:1.5px dashed #cfd6e2;border-radius:14px;background:var(--soft);padding:22px;text-align:center;transition:.15s;cursor:pointer}
+.drop.hot{border-color:var(--blue);background:var(--blue-soft)}
+.drop-ic{font-size:22px;color:var(--blue);display:block;margin-bottom:4px;font-weight:700}
+.drop-t{font-size:13.5px;font-weight:600}
+.drop-s{font-size:12.5px;color:var(--mut);margin-top:3px}
+.linkbtn{background:none;border:none;color:var(--blue);font:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
+
+.or{display:flex;align-items:center;gap:10px;color:var(--faint);font-size:11px;margin:14px 0 10px}
+.or::before,.or::after{content:"";height:1px;background:var(--line);flex:1}
+textarea{width:100%;min-height:118px;resize:vertical;font-family:ui-monospace,"SF Mono",Menlo,monospace;
+  font-size:12px;line-height:1.5;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:11px}
+
+.actions{display:flex;align-items:center;gap:16px;margin-top:12px}
+.run{border:none;background:var(--blue);color:#fff;font-family:var(--sans);font-weight:700;font-size:14px;
+  padding:12px 22px;border-radius:12px;cursor:pointer;transition:.12s;box-shadow:0 2px 8px rgba(43,107,228,.28)}
+.run:hover{background:var(--blue-ink)} .run:active{transform:translateY(1px)}
+.status{font-size:12.5px;margin-top:10px;min-height:18px;color:var(--mut)}
+.status.ok{color:var(--ok)} .status.err{color:var(--bad)} .status.err b{font-family:ui-monospace,monospace}
+.backend{font-size:11px;margin-top:4px;color:var(--faint)}
+.backend b{color:var(--blue);font-weight:700}
+
+.report{display:flex;flex-direction:column;gap:14px}
+@media (prefers-reduced-motion:no-preference){.report:not([hidden]){animation:rise .3s ease}}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.verdict{display:flex;align-items:center;gap:16px;border-radius:18px;padding:18px 20px;background:var(--card);
+  border:1px solid var(--line);box-shadow:var(--shadow);border-left:5px solid var(--line)}
+.verdict.ok{border-left-color:var(--ok)} .verdict.warn{border-left-color:var(--warn)} .verdict.bad{border-left-color:var(--bad)}
+.v-badge{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;letter-spacing:.02em;white-space:nowrap}
+.verdict.ok .v-badge{color:var(--ok)} .verdict.warn .v-badge{color:var(--warn)} .verdict.bad .v-badge{color:var(--bad)}
+.v-ic{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:15px;font-weight:900}
+.verdict.ok .v-ic{background:var(--ok)} .verdict.warn .v-ic{background:var(--warn)} .verdict.bad .v-ic{background:var(--bad)}
+.v-main{flex:1;min-width:0}
+.v-th{font-size:20px;font-weight:800;text-wrap:balance;letter-spacing:-.01em}
+.v-sub{font-size:12.5px;color:var(--mut);margin-top:3px}
+.v-amt{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.v-amt .a{font-size:19px;font-weight:800;display:block;color:var(--blue-ink)}
+.v-amt .l{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+
+.who{display:flex;flex-wrap:wrap;gap:8px;font-size:12px}
+.who .c{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:7px 11px;color:var(--mut);box-shadow:var(--shadow)}
+.who .c b{color:var(--ink)}
+
+.score-row{display:flex;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.gauge svg{width:116px;height:116px;display:block}
+.g-track{fill:none;stroke:var(--track);stroke-width:11}
+.g-arc{fill:none;stroke:var(--ok);stroke-width:11;stroke-linecap:round;stroke-dasharray:339.29;stroke-dashoffset:339.29;transition:stroke-dashoffset .8s ease,stroke .3s}
+.g-num{fill:var(--ink);font-size:31px;font-weight:800;text-anchor:middle;font-variant-numeric:tabular-nums}
+.g-max{fill:var(--faint);font-size:11px;text-anchor:middle}
+.score-meta{flex:1;min-width:0}
+.meta-line{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.meta-line:last-of-type{border-bottom:none}
+.meta-line span{color:var(--mut)} .meta-line b{font-variant-numeric:tabular-nums}
+.tip{color:var(--faint);cursor:help;font-size:11px;font-style:normal}
+.tip:hover,.tip:focus{color:var(--blue)}
+.conf-hint{font-size:10.5px;color:var(--faint);margin-top:7px;line-height:1.4}
+
+.block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.block-h{font-weight:700;font-size:13px;margin-bottom:11px}
+.block-h .sub{font-weight:400;color:var(--faint);font-size:10.5px}
+.dim{margin-bottom:11px}
+.dim-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px}
+.dim-name{font-weight:600}.dim-sub{font-weight:800;font-variant-numeric:tabular-nums}
+.bar{height:7px;background:var(--track);border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--blue);width:0;transition:width .6s ease}
+.bar i.low{background:var(--warn)} .bar i.bad{background:var(--bad)}
+.dim-meta{display:flex;gap:10px;font-size:10.5px;color:var(--faint);margin-top:3px;font-variant-numeric:tabular-nums}
+.dim-meta .cov{margin-left:auto}
+.veto-note{font-size:10.5px;color:var(--mut);background:var(--soft);border-radius:9px;padding:9px;margin-top:6px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0;background:transparent;border:none;box-shadow:none}
+.two-col>div{background:var(--card);border:1px solid var(--line);padding:16px;border-radius:16px;box-shadow:var(--shadow)}
+.ok-h{color:var(--ok)} .risk-h{color:var(--warn)}
+.facts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.facts li{font-size:12.5px;padding-left:20px;position:relative}
+.facts.ok li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+.facts.risk li::before{content:"!";position:absolute;left:4px;color:var(--warn);font-weight:800}
+.facts .none{color:var(--faint);padding-left:0;font-style:italic}
+.facts .none::before{content:""}
+
+.af-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.af{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut);border-bottom:1px dashed var(--line);padding-bottom:6px}
+.af b{color:var(--ink);font-variant-numeric:tabular-nums}
+.af.hi b{color:var(--blue-ink);font-weight:800} .af.pos b{color:var(--ok)}
+
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
+.cmp-side{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:9px}
+.cmp-side.good{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.cmp-side.warnc{background:var(--warn-bg);border-left:4px solid var(--warn)}
+.cmp-side.badc{background:var(--bad-bg);border-left:4px solid var(--bad)}
+.cmp-t{font-size:11px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--mut)}
+.cmp-dec{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;line-height:1.2}
+.cmp-side.good .cmp-dec{color:var(--ok)} .cmp-side.warnc .cmp-dec{color:var(--warn)} .cmp-side.badc .cmp-dec{color:var(--bad)}
+.cmp-dec .ic{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+  color:#fff;font-size:12px;font-weight:800;flex:none}
+.cmp-side.good .cmp-dec .ic{background:var(--ok)} .cmp-side.warnc .cmp-dec .ic{background:var(--warn)} .cmp-side.badc .cmp-dec .ic{background:var(--bad)}
+.cmp-row{font-size:12px;color:var(--mut);line-height:1.5}
+.cmp-row b{color:var(--ink);font-weight:700}
+.cmp-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:4px}
+.cmp-metrics .chip{background:var(--card)}
+@media (max-width:560px){ .cmp-grid{grid-template-columns:1fr} }
+
+.gov-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.gov-cell{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.gov-cell.wide{grid-column:1 / -1}
+.gov-t{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.02em;
+  text-transform:uppercase;color:var(--mut);margin-bottom:7px}
+.gov-t .dot{width:7px;height:7px;border-radius:50%;background:var(--blue)}
+.gov-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:3px 0;color:var(--mut)}
+.gov-row b{color:var(--ink);font-variant-numeric:tabular-nums;text-align:right}
+.gov-row b.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 9px;
+  border-radius:999px;border:1px solid var(--line);background:var(--card)}
+.chip.ok{color:var(--ok);background:var(--ok-bg);border-color:transparent}
+.chip.warn{color:var(--warn);background:var(--warn-bg);border-color:transparent}
+.chip.bad{color:var(--bad);background:var(--bad-bg);border-color:transparent}
+.chip.blue{color:var(--blue-ink);background:var(--blue-soft);border-color:transparent}
+.gov-scopes{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.corr-src{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;
+  padding:6px 0;border-bottom:1px dashed var(--line)}
+.corr-src:last-child{border-bottom:0}
+.corr-src .nm{color:var(--ink);font-weight:600}
+.corr-src .rp{color:var(--mut);font-variant-numeric:tabular-nums;margin-left:auto;margin-right:8px}
+.gov-note{font-size:10.5px;color:var(--faint);margin-top:8px;line-height:1.5}
+
+.foot{text-align:center;color:var(--faint);font-size:11px}
+
+@media (max-width:560px){
+  .two-col{grid-template-columns:1fr}
+  .verdict{flex-wrap:wrap} .v-amt{text-align:left}
+}
+</style>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s){return document.querySelector(s);};
+  var VND=function(n){return Math.round(n).toLocaleString("en-US")+" VND";};
+  var P="payment",E="expense";
+
+  // ---------------- i18n ----------------
+  var LANGS=[["en","🇬🇧","English"],["vi","🇻🇳","Tiếng Việt"],["th","🇹🇭","ไทย"],["ko","🇰🇷","한국어"],["zh","🇨🇳","中文"],["ja","🇯🇵","日本語"],["id","🇮🇩","Bahasa Indonesia"],["ms","🇲🇾","Bahasa Melayu"],["fil","🇵🇭","Filipino"],["fr","🇫🇷","Français"],["es","🇪🇸","Español"],["de","🇩🇪","Deutsch"]];
+  function langText(code){for(var i=0;i<LANGS.length;i++)if(LANGS[i][0]===code)return LANGS[i][1]+" "+LANGS[i][2];return code;}
+  var LANG="en";
+  var I18N={
+    en:{
+      brand_tag:"Trust Intelligence · Underwriting Console",
+      panel_applicant:"Applicant file",
+      lead:"Load one applicant's data (an .md file from the bank / Open Banking) and generate a lending verdict.",
+      drop_title:"Drag & drop a .md applicant file", drop_or:"or", drop_choose:"choose a file",
+      or_paste:"or paste the file contents", btn_generate:"Generate Report", btn_example:"Try an example",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"loaded — press Generate Report.", st_analysed:"Analysed {name} · {n} months of cashflow.",
+      err_empty:"Load a file or paste applicant data first.", err_prefix:"Could not read the file — ",
+      v_ok:"APPROVE", v_warn:"HUMAN REVIEW", v_bad:"REJECT",
+      rec_approve:"Approve", rec_approve_adjusted:"Approve with adjusted amount",
+      rec_review:"Human Review", rec_reject:"Reject / Request more info",
+      sub_review:"AI recommends — final approval by a human underwriter.",
+      sub_clear:"Clears automated criteria; underwriter confirmation recommended.",
+      suggested:"Suggested", months:"months",
+      who_applicant:"Applicant", who_employment:"Employment", who_credit:"Credit history", who_requested:"Requested",
+      credit_thin:"thin", credit_established:"established", credit_none:"no file",
+      m_tier:"Tier", m_conf:"Confidence", m_fraud:"Fraud veto", m_bureau:"Bureau baseline",
+      tier_strong:"Strong", tier_moderate:"Moderate", tier_weak:"Weak",
+      fraud_low:"Low", fraud_medium:"Medium", fraud_high:"High",
+      bureau_reject:"REJECT (no bureau record)", bureau_approve:"APPROVE (bureau tradelines)",
+      conf_hint:"Confidence blends data breadth ({b}) with cashflow consistency — a thin file lowers confidence, not the score.",
+      dims_h:"Trust dimensions", dims_sub:"subscore · weight · contribution",
+      dim_income_stability:"Income Stability", dim_payment_discipline:"Payment Discipline",
+      dim_savings_behaviour:"Savings Behaviour", dim_financial_trend:"Financial Trend",
+      dim_lifestyle_stability:"Lifestyle Stability", dim_identity_trust:"Identity Trust",
+      lbl_weight:"weight", lbl_coverage:"Evidence coverage", lbl_pts:"pts",
+      veto_note:"Fraud is an independent veto — a high score can't buy back a fraud signal.",
+      pos_h:"Positive signals", risk_h:"Risk signals", none:"None surfaced",
+      fac_stable_inflow:"Stable monthly inflow", fac_reg_insurance:"Regular insurance payment",
+      fac_consistent_utility:"Consistent utility payment", fac_low_volatility:"Low spending volatility",
+      fac_healthy_savings:"Healthy savings behaviour", fac_verified_id:"Verified identity (eKYC)",
+      fac_freelance_var:"Freelance income varies month to month", fac_fraud_signals:"Elevated fraud signals detected",
+      fac_low_savings:"Low or negative savings", fac_missed_payments:"Missed or inconsistent payments",
+      afford_h:"Affordability", afford_sub:"· capacity, separate from trust",
+      af_in:"Avg inflow", af_out:"Avg outflow", af_surplus:"Monthly surplus",
+      af_requested:"Requested", af_cap:"Capacity cap", af_dsr:"Debt-service ratio", af_offer:"Offer",
+      gov_h:"Data governance & provenance",
+      gov_sub:"· sandbox: approved partner · consent · corroboration · audit",
+      gov_partner:"Approved partner", gov_consent:"Consent", gov_corrob:"Income corroboration", gov_audit:"Audit record",
+      gov_category:"Category", gov_status:"Sandbox status", gov_approved:"Approved", gov_unapproved:"Not approved",
+      gov_scopes:"Granted scopes", gov_consent_status:"Status", gov_active:"Active", gov_revoked:"Revoked",
+      gov_implicit:"Implicit (demo)", gov_explicit:"Explicit grant",
+      gov_observed:"Observed inflow", gov_agrees:"agrees", gov_conflicts:"conflict",
+      gov_corr_yes:"Corroborated", gov_corr_no:"No partner source supplied", gov_corr_conflict:"Source conflict",
+      gov_conf_effect:"Confidence effect", gov_hash:"Input fingerprint", gov_versions:"Engine / config",
+      gov_recorded:"Recorded to audit trail",
+      gov_note:"Data is used only under a scoped, revocable consent, sourced from a sandbox-approved partner, and every decision is appended to an immutable audit trail (input fingerprint + versions) so it is reproducible and attributable.",
+      cmp_h:"Traditional bureau vs TrustLink AI", cmp_sub:"· why alternative data matters",
+      cmp_trad_t:"Traditional bureau-only decision", cmp_tl_t:"TrustLink AI decision",
+      cmp_reason:"Reason", cmp_limitation:"Limitation", cmp_score:"Trust Score",
+      cmp_trad_reject:"Reject — no bureau record", cmp_trad_approve:"Approve — has credit history",
+      cmp_trad_reason_reject:"No bureau record / thin credit file",
+      cmp_trad_reason_approve:"Sufficient traditional credit history",
+      cmp_trad_limit:"Cannot assess creditworthiness from credit history alone",
+      cmp_tl_reason:"Verified financial behaviour — Open Banking + trusted alternative data",
+      m_conf_tip:"Confidence reflects the completeness, consistency, and corroboration of available evidence.",
+      gov_timestamp:"Decision timestamp",
+      footer:"Deterministic engine · figures compute live in your browser."
+    },
+    vi:{
+      brand_tag:"Trí tuệ Tin cậy · Bảng thẩm định",
+      panel_applicant:"Hồ sơ người vay",
+      lead:"Nạp dữ liệu một người vay (tệp .md từ ngân hàng / Open Banking) và tạo kết quả thẩm định.",
+      drop_title:"Kéo & thả tệp .md hồ sơ", drop_or:"hoặc", drop_choose:"chọn tệp",
+      or_paste:"hoặc dán nội dung tệp", btn_generate:"Tạo báo cáo", btn_example:"Dùng ví dụ",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"đã nạp — nhấn Tạo báo cáo.", st_analysed:"Đã phân tích {name} · {n} tháng dòng tiền.",
+      err_empty:"Hãy nạp tệp hoặc dán dữ liệu trước.", err_prefix:"Không đọc được tệp — ",
+      v_ok:"CHẤP THUẬN", v_warn:"CẦN THẨM ĐỊNH", v_bad:"TỪ CHỐI",
+      rec_approve:"Chấp thuận", rec_approve_adjusted:"Chấp thuận với hạn mức điều chỉnh",
+      rec_review:"Cần thẩm định", rec_reject:"Từ chối / Cần thêm thông tin",
+      sub_review:"AI đề xuất — quyết định cuối do nhân viên thẩm định.",
+      sub_clear:"Đạt tiêu chí tự động; nên có nhân viên xác nhận.",
+      suggested:"Đề xuất", months:"tháng",
+      who_applicant:"Người vay", who_employment:"Nghề nghiệp", who_credit:"Lịch sử tín dụng", who_requested:"Số tiền đề nghị",
+      credit_thin:"mỏng", credit_established:"đầy đủ", credit_none:"chưa có",
+      m_tier:"Bậc", m_conf:"Độ tin cậy", m_fraud:"Chặn gian lận", m_bureau:"Chuẩn CIC truyền thống",
+      tier_strong:"Mạnh", tier_moderate:"Trung bình", tier_weak:"Yếu",
+      fraud_low:"Thấp", fraud_medium:"Trung bình", fraud_high:"Cao",
+      bureau_reject:"TỪ CHỐI (không có hồ sơ tín dụng)", bureau_approve:"CHẤP THUẬN (có lịch sử tín dụng)",
+      conf_hint:"Độ tin cậy kết hợp độ phủ dữ liệu ({b}) và tính ổn định dòng tiền — hồ sơ mỏng làm giảm độ tin cậy, không giảm điểm.",
+      dims_h:"Các chiều tin cậy", dims_sub:"điểm · trọng số · đóng góp",
+      dim_income_stability:"Ổn định thu nhập", dim_payment_discipline:"Kỷ luật thanh toán",
+      dim_savings_behaviour:"Hành vi tiết kiệm", dim_financial_trend:"Xu hướng tài chính",
+      dim_lifestyle_stability:"Ổn định chi tiêu", dim_identity_trust:"Tin cậy danh tính",
+      lbl_weight:"trọng số", lbl_coverage:"độ phủ", lbl_pts:"đ",
+      veto_note:"Gian lận là quyền phủ quyết độc lập — điểm cao không thể bù lại dấu hiệu gian lận.",
+      pos_h:"Tín hiệu tích cực", risk_h:"Tín hiệu rủi ro", none:"Không có",
+      fac_stable_inflow:"Dòng tiền vào ổn định", fac_reg_insurance:"Thanh toán bảo hiểm đều đặn",
+      fac_consistent_utility:"Thanh toán tiện ích đều đặn", fac_low_volatility:"Chi tiêu ít biến động",
+      fac_healthy_savings:"Thói quen tiết kiệm tốt", fac_verified_id:"Danh tính đã xác minh (eKYC)",
+      fac_freelance_var:"Thu nhập freelance thay đổi theo tháng", fac_fraud_signals:"Phát hiện dấu hiệu gian lận",
+      fac_low_savings:"Tiết kiệm thấp hoặc âm", fac_missed_payments:"Thanh toán trễ hoặc không đều",
+      afford_h:"Khả năng chi trả", afford_sub:"· năng lực trả nợ, tách khỏi tin cậy",
+      af_in:"Dòng tiền vào TB", af_out:"Dòng tiền ra TB", af_surplus:"Thặng dư hàng tháng",
+      af_requested:"Số tiền đề nghị", af_cap:"Hạn mức tối đa", af_dsr:"Tỷ lệ nợ/thu nhập", af_offer:"Đề xuất",
+      footer:"Engine tất định · số liệu tính trực tiếp trên trình duyệt."
+    },
+    th:{
+      brand_tag:"Trust Intelligence · คอนโซลอนุมัติสินเชื่อ",
+      panel_applicant:"ไฟล์ข้อมูลผู้ขอกู้",
+      lead:"โหลดข้อมูลผู้ขอกู้ 1 คน (ไฟล์ .md จากธนาคาร / Open Banking) แล้วสร้างผลการพิจารณา",
+      drop_title:"ลากวางไฟล์ .md ของผู้ขอกู้", drop_or:"หรือ", drop_choose:"เลือกไฟล์",
+      or_paste:"หรือวางเนื้อหาไฟล์", btn_generate:"สร้างรายงาน", btn_example:"ลองตัวอย่าง",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"โหลดแล้ว — กดสร้างรายงาน", st_analysed:"วิเคราะห์ {name} · กระแสเงิน {n} เดือน",
+      err_empty:"กรุณาโหลดไฟล์หรือวางข้อมูลก่อน", err_prefix:"อ่านไฟล์ไม่ได้ — ",
+      v_ok:"อนุมัติ", v_warn:"ต้องตรวจเพิ่มเติม", v_bad:"ไม่อนุมัติ",
+      rec_approve:"อนุมัติ", rec_approve_adjusted:"อนุมัติแบบปรับวงเงิน",
+      rec_review:"ต้องตรวจเพิ่มเติม", rec_reject:"ไม่อนุมัติ / ขอข้อมูลเพิ่ม",
+      sub_review:"AI แนะนำ — การอนุมัติสุดท้ายโดยเจ้าหน้าที่",
+      sub_clear:"ผ่านเกณฑ์อัตโนมัติ; แนะนำให้เจ้าหน้าที่ยืนยัน",
+      suggested:"เสนอ", months:"เดือน",
+      who_applicant:"ผู้ขอกู้", who_employment:"อาชีพ", who_credit:"ประวัติเครดิต", who_requested:"ยอดที่ขอ",
+      credit_thin:"บาง", credit_established:"มีประวัติ", credit_none:"ไม่มีประวัติ",
+      m_tier:"ระดับ", m_conf:"ความเชื่อมั่น", m_fraud:"ด่านทุจริต", m_bureau:"เทียบระบบเครดิตเดิม",
+      tier_strong:"แข็งแรง", tier_moderate:"ปานกลาง", tier_weak:"อ่อน",
+      fraud_low:"ต่ำ", fraud_medium:"ปานกลาง", fraud_high:"สูง",
+      bureau_reject:"ไม่อนุมัติ (ไม่มีประวัติเครดิต)", bureau_approve:"อนุมัติ (มีประวัติเครดิต)",
+      conf_hint:"ความเชื่อมั่นรวมความครอบคลุมข้อมูล ({b}) กับความสม่ำเสมอของกระแสเงิน — ไฟล์บางลดความเชื่อมั่น ไม่ใช่คะแนน",
+      dims_h:"มิติความน่าเชื่อถือ", dims_sub:"คะแนนย่อย · น้ำหนัก · ส่วนร่วม",
+      dim_income_stability:"ความมั่นคงรายได้", dim_payment_discipline:"วินัยการชำระเงิน",
+      dim_savings_behaviour:"พฤติกรรมการออม", dim_financial_trend:"แนวโน้มการเงิน",
+      dim_lifestyle_stability:"ความมั่นคงไลฟ์สไตล์", dim_identity_trust:"ความน่าเชื่อถือตัวตน",
+      lbl_weight:"น้ำหนัก", lbl_coverage:"ครอบคลุม", lbl_pts:"pts",
+      veto_note:"ทุจริตเป็นด่าน veto อิสระ — คะแนนสูงซื้อคืนสัญญาณทุจริตไม่ได้",
+      pos_h:"สัญญาณเชิงบวก", risk_h:"สัญญาณเสี่ยง", none:"ไม่พบ",
+      fac_stable_inflow:"รายรับต่อเดือนสม่ำเสมอ", fac_reg_insurance:"จ่ายประกันสม่ำเสมอ",
+      fac_consistent_utility:"จ่ายค่าสาธารณูปโภคสม่ำเสมอ", fac_low_volatility:"ความผันผวนการใช้จ่ายต่ำ",
+      fac_healthy_savings:"พฤติกรรมการออมดี", fac_verified_id:"ยืนยันตัวตนแล้ว (eKYC)",
+      fac_freelance_var:"รายได้ฟรีแลนซ์ผันผวนรายเดือน", fac_fraud_signals:"พบสัญญาณทุจริตสูงขึ้น",
+      fac_low_savings:"เงินออมต่ำหรือติดลบ", fac_missed_payments:"ชำระเงินขาดหรือไม่สม่ำเสมอ",
+      afford_h:"กำลังผ่อนชำระ", afford_sub:"· ความสามารถจ่าย แยกจากความน่าเชื่อถือ",
+      af_in:"รายรับเฉลี่ย", af_out:"รายจ่ายเฉลี่ย", af_surplus:"เงินเหลือต่อเดือน",
+      af_requested:"ยอดที่ขอ", af_cap:"เพดานความสามารถ", af_dsr:"สัดส่วนภาระหนี้ต่อรายได้", af_offer:"วงเงินเสนอ",
+      footer:"เอนจินแบบกำหนดได้ · คำนวณสดบนเบราว์เซอร์"
+    },
+    ko:{
+      brand_tag:"Trust Intelligence · 여신 심사 콘솔",
+      panel_applicant:"신청자 파일",
+      lead:"신청자 데이터(은행/오픈뱅킹의 .md 파일)를 불러와 여신 판정을 생성합니다.",
+      drop_title:".md 신청자 파일을 끌어다 놓기", drop_or:"또는", drop_choose:"파일 선택",
+      or_paste:"또는 파일 내용 붙여넣기", btn_generate:"보고서 생성", btn_example:"예시 사용",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"불러옴 — 보고서 생성을 누르세요.", st_analysed:"{name} 분석 · 현금흐름 {n}개월",
+      err_empty:"먼저 파일을 불러오거나 데이터를 붙여넣으세요.", err_prefix:"파일을 읽을 수 없습니다 — ",
+      v_ok:"승인", v_warn:"심사 필요", v_bad:"거절",
+      rec_approve:"승인", rec_approve_adjusted:"조정된 한도로 승인",
+      rec_review:"심사 필요", rec_reject:"거절 / 추가 정보 요청",
+      sub_review:"AI 권고 — 최종 승인은 심사역이 결정합니다.",
+      sub_clear:"자동 기준 통과; 심사역 확인 권장.",
+      suggested:"제안", months:"개월",
+      who_applicant:"신청자", who_employment:"직업", who_credit:"신용 이력", who_requested:"신청 금액",
+      credit_thin:"얇음", credit_established:"충분", credit_none:"기록 없음",
+      m_tier:"등급", m_conf:"신뢰도", m_fraud:"사기 거부권", m_bureau:"기존 신용평가 기준",
+      tier_strong:"우수", tier_moderate:"보통", tier_weak:"취약",
+      fraud_low:"낮음", fraud_medium:"중간", fraud_high:"높음",
+      bureau_reject:"거절 (신용 기록 없음)", bureau_approve:"승인 (신용 기록 있음)",
+      conf_hint:"신뢰도는 데이터 폭({b})과 현금흐름 일관성을 결합합니다 — 얇은 파일은 점수가 아니라 신뢰도를 낮춥니다.",
+      dims_h:"신뢰 지표", dims_sub:"세부점수 · 가중치 · 기여",
+      dim_income_stability:"소득 안정성", dim_payment_discipline:"결제 성실도",
+      dim_savings_behaviour:"저축 습관", dim_financial_trend:"재무 추세",
+      dim_lifestyle_stability:"생활 안정성", dim_identity_trust:"신원 신뢰도",
+      lbl_weight:"가중치", lbl_coverage:"커버리지", lbl_pts:"pt",
+      veto_note:"사기는 독립적인 거부권입니다 — 높은 점수로 사기 신호를 상쇄할 수 없습니다.",
+      pos_h:"긍정 신호", risk_h:"위험 신호", none:"없음",
+      fac_stable_inflow:"안정적인 월 유입", fac_reg_insurance:"정기 보험 납부",
+      fac_consistent_utility:"공과금 꾸준히 납부", fac_low_volatility:"낮은 지출 변동성",
+      fac_healthy_savings:"건전한 저축 습관", fac_verified_id:"신원 확인됨 (eKYC)",
+      fac_freelance_var:"프리랜서 소득 월별 변동", fac_fraud_signals:"사기 신호 감지됨",
+      fac_low_savings:"낮거나 마이너스 저축", fac_missed_payments:"연체 또는 불규칙 납부",
+      afford_h:"상환 능력", afford_sub:"· 신뢰도와 별개의 상환 여력",
+      af_in:"평균 유입", af_out:"평균 유출", af_surplus:"월 잉여",
+      af_requested:"신청 금액", af_cap:"한도 상한", af_dsr:"부채상환비율(DSR)", af_offer:"제안 금액",
+      footer:"결정론적 엔진 · 수치는 브라우저에서 실시간 계산됩니다."
+    },
+    zh:{
+      brand_tag:"信任智能 · 信贷审核控制台",
+      panel_applicant:"申请人文件",
+      lead:"载入一位申请人的数据（来自银行 / 开放银行的 .md 文件）并生成信贷判定。",
+      drop_title:"拖放 .md 申请人文件", drop_or:"或", drop_choose:"选择文件",
+      or_paste:"或粘贴文件内容", btn_generate:"生成报告", btn_example:"试用示例",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"已载入 — 请点击生成报告。", st_analysed:"已分析 {name} · {n} 个月现金流。",
+      err_empty:"请先载入文件或粘贴申请人数据。", err_prefix:"无法读取文件 — ",
+      v_ok:"批准", v_warn:"需人工复核", v_bad:"拒绝",
+      rec_approve:"批准", rec_approve_adjusted:"按调整后额度批准",
+      rec_review:"需人工复核", rec_reject:"拒绝 / 需补充信息",
+      sub_review:"AI 建议 — 最终批准由人工审核员决定。",
+      sub_clear:"已通过自动标准；建议审核员确认。",
+      suggested:"建议", months:"个月",
+      who_applicant:"申请人", who_employment:"职业", who_credit:"信用记录", who_requested:"申请金额",
+      credit_thin:"薄", credit_established:"完整", credit_none:"无记录",
+      m_tier:"等级", m_conf:"置信度", m_fraud:"欺诈否决", m_bureau:"传统征信基准",
+      tier_strong:"强", tier_moderate:"中等", tier_weak:"弱",
+      fraud_low:"低", fraud_medium:"中", fraud_high:"高",
+      bureau_reject:"拒绝（无征信记录）", bureau_approve:"批准（有征信记录）",
+      conf_hint:"置信度结合数据广度（{b}）与现金流稳定性 — 薄档案降低的是置信度，而非分数。",
+      dims_h:"信任维度", dims_sub:"子分 · 权重 · 贡献",
+      dim_income_stability:"收入稳定性", dim_payment_discipline:"还款纪律",
+      dim_savings_behaviour:"储蓄行为", dim_financial_trend:"财务趋势",
+      dim_lifestyle_stability:"消费稳定性", dim_identity_trust:"身份可信度",
+      lbl_weight:"权重", lbl_coverage:"覆盖", lbl_pts:"分",
+      veto_note:"欺诈是独立否决项 — 高分无法抵消欺诈信号。",
+      pos_h:"正面信号", risk_h:"风险信号", none:"无",
+      fac_stable_inflow:"每月流入稳定", fac_reg_insurance:"保险按时缴纳",
+      fac_consistent_utility:"水电费按时缴纳", fac_low_volatility:"支出波动低",
+      fac_healthy_savings:"储蓄习惯良好", fac_verified_id:"身份已验证 (eKYC)",
+      fac_freelance_var:"自由职业收入逐月波动", fac_fraud_signals:"检测到较高欺诈信号",
+      fac_low_savings:"储蓄偏低或为负", fac_missed_payments:"漏缴或还款不规律",
+      afford_h:"还款能力", afford_sub:"· 与信任度分开的负担能力",
+      af_in:"平均流入", af_out:"平均流出", af_surplus:"每月结余",
+      af_requested:"申请金额", af_cap:"能力上限", af_dsr:"偿债比率(DSR)", af_offer:"建议额度",
+      footer:"确定性引擎 · 数值在浏览器实时计算。"
+    },
+    ja:{
+      brand_tag:"信頼インテリジェンス · 与信審査コンソール",
+      panel_applicant:"申込者ファイル",
+      lead:"申込者データ（銀行 / オープンバンキングの .md ファイル）を読み込み、与信判定を生成します。",
+      drop_title:".md 申込者ファイルをドラッグ＆ドロップ", drop_or:"または", drop_choose:"ファイルを選択",
+      or_paste:"またはファイル内容を貼り付け", btn_generate:"レポート生成", btn_example:"サンプルを試す",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"読み込みました — レポート生成を押してください。", st_analysed:"{name} を分析 · キャッシュフロー {n} か月",
+      err_empty:"先にファイルを読み込むかデータを貼り付けてください。", err_prefix:"ファイルを読み取れません — ",
+      v_ok:"承認", v_warn:"要人的審査", v_bad:"却下",
+      rec_approve:"承認", rec_approve_adjusted:"調整後の金額で承認",
+      rec_review:"人的審査が必要", rec_reject:"却下 / 追加情報が必要",
+      sub_review:"AI が推奨 — 最終承認は審査担当者が行います。",
+      sub_clear:"自動基準を満たしています。担当者の確認を推奨。",
+      suggested:"提案", months:"か月",
+      who_applicant:"申込者", who_employment:"職業", who_credit:"信用履歴", who_requested:"申込金額",
+      credit_thin:"希薄", credit_established:"十分", credit_none:"履歴なし",
+      m_tier:"ランク", m_conf:"信頼度", m_fraud:"不正拒否権", m_bureau:"従来の信用基準",
+      tier_strong:"良好", tier_moderate:"中程度", tier_weak:"脆弱",
+      fraud_low:"低", fraud_medium:"中", fraud_high:"高",
+      bureau_reject:"却下（信用記録なし）", bureau_approve:"承認（信用記録あり）",
+      conf_hint:"信頼度はデータの広さ（{b}）とキャッシュフローの安定性を組み合わせます — 履歴が希薄でも下がるのは信頼度でありスコアではありません。",
+      dims_h:"信頼指標", dims_sub:"サブスコア · 重み · 寄与",
+      dim_income_stability:"収入の安定性", dim_payment_discipline:"支払規律",
+      dim_savings_behaviour:"貯蓄行動", dim_financial_trend:"財務トレンド",
+      dim_lifestyle_stability:"支出の安定性", dim_identity_trust:"本人確認の信頼性",
+      lbl_weight:"重み", lbl_coverage:"カバー", lbl_pts:"pt",
+      veto_note:"不正は独立した拒否権です — 高スコアでも不正シグナルは相殺できません。",
+      pos_h:"ポジティブ信号", risk_h:"リスク信号", none:"なし",
+      fac_stable_inflow:"毎月の入金が安定", fac_reg_insurance:"保険料を定期的に支払",
+      fac_consistent_utility:"公共料金を安定的に支払", fac_low_volatility:"支出の変動が小さい",
+      fac_healthy_savings:"健全な貯蓄習慣", fac_verified_id:"本人確認済み (eKYC)",
+      fac_freelance_var:"フリーランス収入が月ごとに変動", fac_fraud_signals:"不正シグナルの上昇を検知",
+      fac_low_savings:"貯蓄が少ないまたはマイナス", fac_missed_payments:"支払遅延または不規則",
+      afford_h:"返済能力", afford_sub:"· 信頼度とは別の返済余力",
+      af_in:"平均入金", af_out:"平均出金", af_surplus:"月間余剰",
+      af_requested:"申込金額", af_cap:"能力上限", af_dsr:"返済負担率(DSR)", af_offer:"提案額",
+      footer:"決定論的エンジン · 数値はブラウザでリアルタイム計算。"
+    },
+    id:{
+      brand_tag:"Intelijen Kepercayaan yang dapat dijelaskan untuk pinjaman AI",
+      panel_applicant:"Berkas pemohon",
+      lead:"Muat data satu pemohon (berkas .md dari bank / Open Banking) lalu hasilkan keputusan pinjaman.",
+      drop_title:"Seret & lepas berkas pemohon .md", drop_or:"atau", drop_choose:"pilih berkas",
+      or_paste:"atau tempel isi berkas", btn_generate:"Buat Laporan", btn_example:"Coba contoh",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"dimuat — tekan Buat Laporan.", st_analysed:"Menganalisis {name} · {n} bulan arus kas.",
+      err_empty:"Muat berkas atau tempel data pemohon dulu.", err_prefix:"Tidak dapat membaca berkas — ",
+      v_ok:"SETUJU", v_warn:"TINJAUAN MANUAL", v_bad:"TOLAK",
+      rec_approve:"Setujui", rec_approve_adjusted:"Setujui dengan jumlah disesuaikan",
+      rec_review:"Tinjauan manusia", rec_reject:"Tolak / Minta info lebih",
+      sub_review:"AI merekomendasikan — persetujuan akhir oleh penilai manusia.",
+      sub_clear:"Memenuhi kriteria otomatis; konfirmasi penilai disarankan.",
+      suggested:"Disarankan", months:"bulan",
+      who_applicant:"Pemohon", who_employment:"Pekerjaan", who_credit:"Riwayat kredit", who_requested:"Diminta",
+      credit_thin:"tipis", credit_established:"mapan", credit_none:"tanpa berkas",
+      m_tier:"Tingkat", m_conf:"Keyakinan", m_fraud:"Veto penipuan", m_bureau:"Acuan biro tradisional",
+      tier_strong:"Kuat", tier_moderate:"Sedang", tier_weak:"Lemah",
+      fraud_low:"Rendah", fraud_medium:"Sedang", fraud_high:"Tinggi",
+      bureau_reject:"TOLAK (tanpa catatan biro)", bureau_approve:"SETUJU (ada riwayat kredit)",
+      conf_hint:"Keyakinan memadukan cakupan data ({b}) dengan konsistensi arus kas — berkas tipis menurunkan keyakinan, bukan skor.",
+      dims_h:"Dimensi kepercayaan", dims_sub:"subskor · bobot · kontribusi",
+      dim_income_stability:"Stabilitas pendapatan", dim_payment_discipline:"Disiplin pembayaran",
+      dim_savings_behaviour:"Perilaku menabung", dim_financial_trend:"Tren keuangan",
+      dim_lifestyle_stability:"Stabilitas gaya hidup", dim_identity_trust:"Kepercayaan identitas",
+      lbl_weight:"bobot", lbl_coverage:"cakupan", lbl_pts:"poin",
+      veto_note:"Penipuan adalah veto independen — skor tinggi tak bisa menutupi sinyal penipuan.",
+      pos_h:"Sinyal positif", risk_h:"Sinyal risiko", none:"Tidak ada",
+      fac_stable_inflow:"Arus masuk bulanan stabil", fac_reg_insurance:"Pembayaran asuransi teratur",
+      fac_consistent_utility:"Pembayaran utilitas konsisten", fac_low_volatility:"Volatilitas pengeluaran rendah",
+      fac_healthy_savings:"Perilaku menabung sehat", fac_verified_id:"Identitas terverifikasi (eKYC)",
+      fac_freelance_var:"Pendapatan lepas berubah tiap bulan", fac_fraud_signals:"Sinyal penipuan meningkat terdeteksi",
+      fac_low_savings:"Tabungan rendah atau negatif", fac_missed_payments:"Pembayaran terlewat atau tak teratur",
+      afford_h:"Kemampuan bayar", afford_sub:"· kapasitas, terpisah dari kepercayaan",
+      af_in:"Rata-rata masuk", af_out:"Rata-rata keluar", af_surplus:"Surplus bulanan",
+      af_requested:"Diminta", af_cap:"Batas kapasitas", af_dsr:"Rasio layanan utang (DSR)", af_offer:"Penawaran",
+      footer:"Mesin deterministik · angka dihitung langsung di peramban."
+    },
+    ms:{
+      brand_tag:"Kecerdasan Kepercayaan boleh dijelaskan untuk pinjaman AI",
+      panel_applicant:"Fail pemohon",
+      lead:"Muatkan data seorang pemohon (fail .md dari bank / Open Banking) dan jana keputusan pinjaman.",
+      drop_title:"Seret & lepas fail pemohon .md", drop_or:"atau", drop_choose:"pilih fail",
+      or_paste:"atau tampal kandungan fail", btn_generate:"Jana Laporan", btn_example:"Cuba contoh",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"dimuatkan — tekan Jana Laporan.", st_analysed:"Menganalisis {name} · {n} bulan aliran tunai.",
+      err_empty:"Muatkan fail atau tampal data pemohon dahulu.", err_prefix:"Tidak dapat membaca fail — ",
+      v_ok:"LULUS", v_warn:"SEMAKAN MANUAL", v_bad:"TOLAK",
+      rec_approve:"Luluskan", rec_approve_adjusted:"Luluskan dengan jumlah diselaraskan",
+      rec_review:"Semakan manusia", rec_reject:"Tolak / Minta maklumat lanjut",
+      sub_review:"AI mengesyorkan — kelulusan akhir oleh penilai manusia.",
+      sub_clear:"Memenuhi kriteria automatik; pengesahan penilai disyorkan.",
+      suggested:"Dicadangkan", months:"bulan",
+      who_applicant:"Pemohon", who_employment:"Pekerjaan", who_credit:"Sejarah kredit", who_requested:"Dipohon",
+      credit_thin:"nipis", credit_established:"mantap", credit_none:"tiada fail",
+      m_tier:"Peringkat", m_conf:"Keyakinan", m_fraud:"Veto penipuan", m_bureau:"Penanda aras biro tradisional",
+      tier_strong:"Kukuh", tier_moderate:"Sederhana", tier_weak:"Lemah",
+      fraud_low:"Rendah", fraud_medium:"Sederhana", fraud_high:"Tinggi",
+      bureau_reject:"TOLAK (tiada rekod biro)", bureau_approve:"LULUS (ada sejarah kredit)",
+      conf_hint:"Keyakinan menggabungkan liputan data ({b}) dengan ketekalan aliran tunai — fail nipis menurunkan keyakinan, bukan skor.",
+      dims_h:"Dimensi kepercayaan", dims_sub:"subskor · pemberat · sumbangan",
+      dim_income_stability:"Kestabilan pendapatan", dim_payment_discipline:"Disiplin pembayaran",
+      dim_savings_behaviour:"Tingkah laku simpanan", dim_financial_trend:"Trend kewangan",
+      dim_lifestyle_stability:"Kestabilan gaya hidup", dim_identity_trust:"Kepercayaan identiti",
+      lbl_weight:"pemberat", lbl_coverage:"liputan", lbl_pts:"mata",
+      veto_note:"Penipuan ialah veto bebas — skor tinggi tidak boleh menampung isyarat penipuan.",
+      pos_h:"Isyarat positif", risk_h:"Isyarat risiko", none:"Tiada",
+      fac_stable_inflow:"Aliran masuk bulanan stabil", fac_reg_insurance:"Bayaran insurans tetap",
+      fac_consistent_utility:"Bayaran utiliti konsisten", fac_low_volatility:"Turun naik perbelanjaan rendah",
+      fac_healthy_savings:"Tabiat simpanan sihat", fac_verified_id:"Identiti disahkan (eKYC)",
+      fac_freelance_var:"Pendapatan bebas berubah setiap bulan", fac_fraud_signals:"Isyarat penipuan meningkat dikesan",
+      fac_low_savings:"Simpanan rendah atau negatif", fac_missed_payments:"Bayaran tertunggak atau tidak tetap",
+      afford_h:"Kemampuan bayar", afford_sub:"· kapasiti, berasingan daripada kepercayaan",
+      af_in:"Purata masuk", af_out:"Purata keluar", af_surplus:"Lebihan bulanan",
+      af_requested:"Dipohon", af_cap:"Had kapasiti", af_dsr:"Nisbah khidmat hutang (DSR)", af_offer:"Tawaran",
+      footer:"Enjin berketentuan · nombor dikira secara langsung dalam pelayar."
+    },
+    fil:{
+      brand_tag:"Naipaliliwanag na Trust Intelligence para sa AI lending",
+      panel_applicant:"File ng aplikante",
+      lead:"I-load ang datos ng isang aplikante (.md file mula sa bangko / Open Banking) at bumuo ng pasya sa pautang.",
+      drop_title:"I-drag & drop ang .md file ng aplikante", drop_or:"o", drop_choose:"pumili ng file",
+      or_paste:"o i-paste ang nilalaman ng file", btn_generate:"Gumawa ng Ulat", btn_example:"Subukan ang halimbawa",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"na-load — pindutin ang Gumawa ng Ulat.", st_analysed:"Sinuri si {name} · {n} buwan ng cash flow.",
+      err_empty:"Mag-load ng file o mag-paste ng datos muna.", err_prefix:"Hindi mabasa ang file — ",
+      v_ok:"APRUBADO", v_warn:"REBYU NG TAO", v_bad:"TINANGGIHAN",
+      rec_approve:"Aprubahan", rec_approve_adjusted:"Aprubahan nang may inayos na halaga",
+      rec_review:"Rebyu ng tao", rec_reject:"Tanggihan / Humingi ng karagdagang impormasyon",
+      sub_review:"Nagrerekomenda ang AI — panghuling pag-apruba ng tao.",
+      sub_clear:"Pasado sa awtomatikong pamantayan; inirerekomenda ang kumpirmasyon ng tao.",
+      suggested:"Iminumungkahi", months:"buwan",
+      who_applicant:"Aplikante", who_employment:"Trabaho", who_credit:"Kasaysayan ng kredito", who_requested:"Hiniling",
+      credit_thin:"manipis", credit_established:"matatag", credit_none:"walang file",
+      m_tier:"Antas", m_conf:"Kumpiyansa", m_fraud:"Veto sa pandaraya", m_bureau:"Tradisyunal na bureau",
+      tier_strong:"Malakas", tier_moderate:"Katamtaman", tier_weak:"Mahina",
+      fraud_low:"Mababa", fraud_medium:"Katamtaman", fraud_high:"Mataas",
+      bureau_reject:"TINANGGIHAN (walang rekord ng bureau)", bureau_approve:"APRUBADO (may kasaysayan ng kredito)",
+      conf_hint:"Pinagsasama ng kumpiyansa ang lawak ng datos ({b}) at pagkakapare-pareho ng cash flow — ang manipis na file ay nagpapababa ng kumpiyansa, hindi ng iskor.",
+      dims_h:"Mga dimensyon ng tiwala", dims_sub:"subscore · timbang · ambag",
+      dim_income_stability:"Katatagan ng kita", dim_payment_discipline:"Disiplina sa pagbabayad",
+      dim_savings_behaviour:"Ugali sa pag-iimpok", dim_financial_trend:"Takbo ng pananalapi",
+      dim_lifestyle_stability:"Katatagan ng pamumuhay", dim_identity_trust:"Tiwala sa pagkakakilanlan",
+      lbl_weight:"timbang", lbl_coverage:"saklaw", lbl_pts:"puntos",
+      veto_note:"Ang pandaraya ay independiyenteng veto — hindi kayang bawiin ng mataas na iskor ang senyales ng pandaraya.",
+      pos_h:"Positibong senyales", risk_h:"Senyales ng panganib", none:"Wala",
+      fac_stable_inflow:"Matatag na buwanang papasok", fac_reg_insurance:"Regular na bayad sa insurance",
+      fac_consistent_utility:"Tuloy-tuloy na bayad sa utility", fac_low_volatility:"Mababang pagbabago sa gastos",
+      fac_healthy_savings:"Malusog na pag-iimpok", fac_verified_id:"Beripikadong pagkakakilanlan (eKYC)",
+      fac_freelance_var:"Nagbabago-bago buwan-buwan ang kitang freelance", fac_fraud_signals:"May natukoy na mas mataas na senyales ng pandaraya",
+      fac_low_savings:"Mababa o negatibong ipon", fac_missed_payments:"Nalaktawang o hindi regular na pagbabayad",
+      afford_h:"Kakayahang magbayad", afford_sub:"· kapasidad, hiwalay sa tiwala",
+      af_in:"Karaniwang papasok", af_out:"Karaniwang palabas", af_surplus:"Buwanang labis",
+      af_requested:"Hiniling", af_cap:"Limitasyon ng kapasidad", af_dsr:"Debt-service ratio (DSR)", af_offer:"Alok",
+      footer:"Deterministikong makina · kinakalkula agad sa browser."
+    },
+    fr:{
+      brand_tag:"Intelligence de confiance explicable pour le crédit assisté par IA",
+      panel_applicant:"Dossier du demandeur",
+      lead:"Chargez les données d'un demandeur (fichier .md de la banque / Open Banking) et générez une décision de prêt.",
+      drop_title:"Glissez-déposez un fichier .md", drop_or:"ou", drop_choose:"choisir un fichier",
+      or_paste:"ou collez le contenu du fichier", btn_generate:"Générer le rapport", btn_example:"Essayer un exemple",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"chargé — cliquez sur Générer le rapport.", st_analysed:"{name} analysé · {n} mois de flux de trésorerie.",
+      err_empty:"Chargez un fichier ou collez des données d'abord.", err_prefix:"Impossible de lire le fichier — ",
+      v_ok:"ACCORDÉ", v_warn:"EXAMEN HUMAIN", v_bad:"REFUSÉ",
+      rec_approve:"Accorder", rec_approve_adjusted:"Accorder avec montant ajusté",
+      rec_review:"Examen humain", rec_reject:"Refuser / Demander plus d'infos",
+      sub_review:"L'IA recommande — décision finale par un analyste humain.",
+      sub_clear:"Répond aux critères automatiques ; confirmation de l'analyste recommandée.",
+      suggested:"Suggéré", months:"mois",
+      who_applicant:"Demandeur", who_employment:"Emploi", who_credit:"Historique de crédit", who_requested:"Demandé",
+      credit_thin:"mince", credit_established:"établi", credit_none:"aucun dossier",
+      m_tier:"Niveau", m_conf:"Confiance", m_fraud:"Veto fraude", m_bureau:"Référence bureau classique",
+      tier_strong:"Fort", tier_moderate:"Modéré", tier_weak:"Faible",
+      fraud_low:"Faible", fraud_medium:"Moyen", fraud_high:"Élevé",
+      bureau_reject:"REFUSÉ (aucun dossier bureau)", bureau_approve:"ACCORDÉ (historique de crédit)",
+      conf_hint:"La confiance combine l'étendue des données ({b}) et la régularité des flux — un dossier mince réduit la confiance, pas le score.",
+      dims_h:"Dimensions de confiance", dims_sub:"sous-score · poids · contribution",
+      dim_income_stability:"Stabilité des revenus", dim_payment_discipline:"Discipline de paiement",
+      dim_savings_behaviour:"Comportement d'épargne", dim_financial_trend:"Tendance financière",
+      dim_lifestyle_stability:"Stabilité du train de vie", dim_identity_trust:"Confiance d'identité",
+      lbl_weight:"poids", lbl_coverage:"couverture", lbl_pts:"pts",
+      veto_note:"La fraude est un veto indépendant — un score élevé ne peut compenser un signal de fraude.",
+      pos_h:"Signaux positifs", risk_h:"Signaux de risque", none:"Aucun",
+      fac_stable_inflow:"Entrées mensuelles stables", fac_reg_insurance:"Paiement d'assurance régulier",
+      fac_consistent_utility:"Paiement de charges régulier", fac_low_volatility:"Faible volatilité des dépenses",
+      fac_healthy_savings:"Épargne saine", fac_verified_id:"Identité vérifiée (eKYC)",
+      fac_freelance_var:"Revenu freelance variable d'un mois à l'autre", fac_fraud_signals:"Signaux de fraude élevés détectés",
+      fac_low_savings:"Épargne faible ou négative", fac_missed_payments:"Paiements manqués ou irréguliers",
+      afford_h:"Capacité de remboursement", afford_sub:"· capacité, distincte de la confiance",
+      af_in:"Entrée moyenne", af_out:"Sortie moyenne", af_surplus:"Excédent mensuel",
+      af_requested:"Demandé", af_cap:"Plafond de capacité", af_dsr:"Taux d'endettement (DSR)", af_offer:"Offre",
+      footer:"Moteur déterministe · chiffres calculés en direct dans le navigateur."
+    },
+    es:{
+      brand_tag:"Inteligencia de Confianza explicable para préstamos con IA",
+      panel_applicant:"Archivo del solicitante",
+      lead:"Cargue los datos de un solicitante (archivo .md del banco / Open Banking) y genere un veredicto de préstamo.",
+      drop_title:"Arrastra y suelta un archivo .md", drop_or:"o", drop_choose:"elegir archivo",
+      or_paste:"o pega el contenido del archivo", btn_generate:"Generar informe", btn_example:"Probar un ejemplo",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"cargado — pulsa Generar informe.", st_analysed:"{name} analizado · {n} meses de flujo de caja.",
+      err_empty:"Carga un archivo o pega los datos primero.", err_prefix:"No se pudo leer el archivo — ",
+      v_ok:"APROBAR", v_warn:"REVISIÓN HUMANA", v_bad:"RECHAZAR",
+      rec_approve:"Aprobar", rec_approve_adjusted:"Aprobar con importe ajustado",
+      rec_review:"Revisión humana", rec_reject:"Rechazar / Pedir más información",
+      sub_review:"La IA recomienda — aprobación final por un analista humano.",
+      sub_clear:"Cumple los criterios automáticos; se recomienda confirmación del analista.",
+      suggested:"Sugerido", months:"meses",
+      who_applicant:"Solicitante", who_employment:"Empleo", who_credit:"Historial crediticio", who_requested:"Solicitado",
+      credit_thin:"escaso", credit_established:"establecido", credit_none:"sin historial",
+      m_tier:"Nivel", m_conf:"Confianza", m_fraud:"Veto de fraude", m_bureau:"Referencia buró tradicional",
+      tier_strong:"Fuerte", tier_moderate:"Moderado", tier_weak:"Débil",
+      fraud_low:"Bajo", fraud_medium:"Medio", fraud_high:"Alto",
+      bureau_reject:"RECHAZAR (sin registro de buró)", bureau_approve:"APROBAR (con historial crediticio)",
+      conf_hint:"La confianza combina la amplitud de datos ({b}) con la consistencia del flujo — un historial escaso reduce la confianza, no la puntuación.",
+      dims_h:"Dimensiones de confianza", dims_sub:"subpuntuación · peso · contribución",
+      dim_income_stability:"Estabilidad de ingresos", dim_payment_discipline:"Disciplina de pago",
+      dim_savings_behaviour:"Hábito de ahorro", dim_financial_trend:"Tendencia financiera",
+      dim_lifestyle_stability:"Estabilidad del estilo de vida", dim_identity_trust:"Confianza de identidad",
+      lbl_weight:"peso", lbl_coverage:"cobertura", lbl_pts:"pts",
+      veto_note:"El fraude es un veto independiente — una puntuación alta no puede compensar una señal de fraude.",
+      pos_h:"Señales positivas", risk_h:"Señales de riesgo", none:"Ninguna",
+      fac_stable_inflow:"Ingresos mensuales estables", fac_reg_insurance:"Pago de seguro regular",
+      fac_consistent_utility:"Pago de servicios constante", fac_low_volatility:"Baja volatilidad de gasto",
+      fac_healthy_savings:"Buen hábito de ahorro", fac_verified_id:"Identidad verificada (eKYC)",
+      fac_freelance_var:"Ingreso freelance variable cada mes", fac_fraud_signals:"Señales de fraude elevadas detectadas",
+      fac_low_savings:"Ahorro bajo o negativo", fac_missed_payments:"Pagos omitidos o irregulares",
+      afford_h:"Capacidad de pago", afford_sub:"· capacidad, separada de la confianza",
+      af_in:"Entrada media", af_out:"Salida media", af_surplus:"Excedente mensual",
+      af_requested:"Solicitado", af_cap:"Límite de capacidad", af_dsr:"Ratio de endeudamiento (DSR)", af_offer:"Oferta",
+      footer:"Motor determinista · cifras calculadas en vivo en el navegador."
+    },
+    de:{
+      brand_tag:"Erklärbare Trust Intelligence für KI-gestützte Kreditvergabe",
+      panel_applicant:"Antragstellerdatei",
+      lead:"Laden Sie die Daten eines Antragstellers (.md-Datei der Bank / Open Banking) und erzeugen Sie ein Krediturteil.",
+      drop_title:"Ziehen Sie eine .md-Datei hierher", drop_or:"oder", drop_choose:"Datei auswählen",
+      or_paste:"oder Dateiinhalt einfügen", btn_generate:"Bericht erstellen", btn_example:"Beispiel testen",
+      ph:"# TrustLink Applicant File\n\n## Applicant\n- name: ...\n- employment: ...\n...",
+      st_loaded:"geladen — auf Bericht erstellen klicken.", st_analysed:"{name} analysiert · {n} Monate Cashflow.",
+      err_empty:"Zuerst eine Datei laden oder Daten einfügen.", err_prefix:"Datei konnte nicht gelesen werden — ",
+      v_ok:"GENEHMIGT", v_warn:"MANUELLE PRÜFUNG", v_bad:"ABGELEHNT",
+      rec_approve:"Genehmigen", rec_approve_adjusted:"Mit angepasstem Betrag genehmigen",
+      rec_review:"Manuelle Prüfung", rec_reject:"Ablehnen / Weitere Infos anfordern",
+      sub_review:"KI empfiehlt — endgültige Genehmigung durch einen menschlichen Prüfer.",
+      sub_clear:"Erfüllt automatische Kriterien; Bestätigung des Prüfers empfohlen.",
+      suggested:"Vorschlag", months:"Monate",
+      who_applicant:"Antragsteller", who_employment:"Beschäftigung", who_credit:"Kredithistorie", who_requested:"Angefragt",
+      credit_thin:"dünn", credit_established:"etabliert", credit_none:"keine Akte",
+      m_tier:"Stufe", m_conf:"Konfidenz", m_fraud:"Betrugs-Veto", m_bureau:"Traditionelle Auskunftei",
+      tier_strong:"Stark", tier_moderate:"Mittel", tier_weak:"Schwach",
+      fraud_low:"Niedrig", fraud_medium:"Mittel", fraud_high:"Hoch",
+      bureau_reject:"ABGELEHNT (kein Auskunftei-Eintrag)", bureau_approve:"GENEHMIGT (mit Kredithistorie)",
+      conf_hint:"Die Konfidenz verbindet Datenbreite ({b}) mit Cashflow-Konsistenz — eine dünne Akte senkt die Konfidenz, nicht den Score.",
+      dims_h:"Vertrauensdimensionen", dims_sub:"Teilscore · Gewicht · Beitrag",
+      dim_income_stability:"Einkommensstabilität", dim_payment_discipline:"Zahlungsdisziplin",
+      dim_savings_behaviour:"Sparverhalten", dim_financial_trend:"Finanztrend",
+      dim_lifestyle_stability:"Lebensstil-Stabilität", dim_identity_trust:"Identitätsvertrauen",
+      lbl_weight:"Gewicht", lbl_coverage:"Abdeckung", lbl_pts:"Pkt",
+      veto_note:"Betrug ist ein unabhängiges Veto — ein hoher Score kann ein Betrugssignal nicht ausgleichen.",
+      pos_h:"Positive Signale", risk_h:"Risikosignale", none:"Keine",
+      fac_stable_inflow:"Stabiler monatlicher Zufluss", fac_reg_insurance:"Regelmäßige Versicherungszahlung",
+      fac_consistent_utility:"Konstante Nebenkostenzahlung", fac_low_volatility:"Geringe Ausgabenschwankung",
+      fac_healthy_savings:"Gesundes Sparverhalten", fac_verified_id:"Verifizierte Identität (eKYC)",
+      fac_freelance_var:"Freiberufliches Einkommen schwankt monatlich", fac_fraud_signals:"Erhöhte Betrugssignale erkannt",
+      fac_low_savings:"Niedrige oder negative Ersparnisse", fac_missed_payments:"Verpasste oder unregelmäßige Zahlungen",
+      afford_h:"Tragfähigkeit", afford_sub:"· Kapazität, getrennt vom Vertrauen",
+      af_in:"Ø Zufluss", af_out:"Ø Abfluss", af_surplus:"Monatlicher Überschuss",
+      af_requested:"Angefragt", af_cap:"Kapazitätsgrenze", af_dsr:"Schuldendienstquote (DSR)", af_offer:"Angebot",
+      footer:"Deterministische Engine · Zahlen live im Browser berechnet."
+    }
+  };
+  function T(k){ var d=I18N[LANG]||I18N.en; return (k in d)?d[k]:(I18N.en[k]||k); }
+
+  // ---------------- engine (deterministic; identical to the Python core) ----------------
+  var ESSENTIAL={rent:1,utility:1,insurance:1,transport:1,food:1};
+  var RECURRING={utility:1,insurance:1,rent:1};
+  var VARIABLE_EMP={freelancer:1,"gig worker":1,gig:1,"self-employed":1,"self employed":1,contractor:1};
+  var FPOINTS={Low:15,Medium:25,High:60};   // #2 additive fraud scoring
+  var OCC_CEILING={"digital designer":40000000,"video editor":40000000,"bank officer":60000000,   // #3
+    "rideshare driver":35000000,"trader":100000000,"engineer":70000000,"teacher":35000000,
+    "nurse":40000000,"sales":45000000,"accountant":55000000};
+  var APR=0.18, DSR_MAX=0.45;   // #4
+  var WEIGHTS={income_stability:25,payment_discipline:20,savings_behaviour:15,financial_trend:15,lifestyle_stability:10,identity_trust:10};
+  var IDEAL={income_stability:9,payment_discipline:10,savings_behaviour:9,financial_trend:12,lifestyle_stability:8};
+  var BANDS={
+    income_stability:[[0.86,9,82],[0.75,0.86,70],[0.60,0.75,55],[0.40,0.60,40],[-9,0.40,25]],
+    payment_discipline:[[0.98,9,88],[0.90,0.98,75],[0.75,0.90,60],[0.50,0.75,40],[-9,0.50,20]],
+    savings_behaviour:[[0.35,9,90],[0.25,0.35,80],[0.15,0.25,65],[0.05,0.15,50],[-9,0.05,30]],
+    financial_trend:[[0.10,9,85],[0.03,0.10,68],[-0.03,0.03,52],[-0.10,-0.03,38],[-9,-0.10,22]],
+    lifestyle_stability:[[0.85,9,88],[0.72,0.85,76],[0.55,0.72,60],[0.35,0.55,45],[-9,0.35,30]],
+    identity_trust:[[0.75,9,80],[0.50,0.75,55],[-9,0.50,30]]
+  };
+  var DIM_FEAT={income_stability:"isi",payment_discipline:"pc",savings_behaviour:"sr",financial_trend:"gr",lifestyle_stability:"lsi",identity_trust:"id"};
+
+  function mean(a){var s=0,i;for(i=0;i<a.length;i++)s+=a[i];return a.length?s/a.length:0;}
+  function pstdev(a){if(a.length<2)return 0;var m=mean(a),s=0,i;for(i=0;i<a.length;i++)s+=(a[i]-m)*(a[i]-m);return Math.sqrt(s/a.length);}
+  function median(a){var b=a.slice().sort(function(x,y){return x-y;}),n=b.length;if(!n)return 0;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;}
+  function clip(x,l,h){return Math.max(l,Math.min(h,x));}
+  function band(d,v){var t=BANDS[d],i;for(i=0;i<t.length;i++){if(v>=t[i][0]&&v<t[i][1])return t[i][2];}return t[0][2];}
+  function cov(m,i){return i<=0?1:Math.min(1,m/i);}
+
+  // #8 approved-partner income corroboration (mirrors corroboration.py: TOL .15, CONFLICT .30)
+  function corroborate(p,ai){
+    var observed=Math.round(ai||0),src=[],cand=[],agree=0,conflict=false,i;
+    if(p.payslip!=null)cand.push(["Pay-slip",p.payslip]);
+    if(p.registry!=null)cand.push(["National Data Centre",p.registry]);
+    for(i=0;i<cand.length;i++){
+      var rep=cand[i][1],gap=(observed>0&&rep>0)?Math.abs(rep-observed)/observed:1;
+      var a=gap<=0.15,cf=gap>0.30; if(a)agree++; if(cf)conflict=true;
+      src.push({name:cand[i][0],reported:rep,gap:Math.round(gap*1e4)/1e4,agrees:a,conflicts:cf});
+    }
+    var bonus=agree>0?Math.min(0.06,0.03*agree):0;
+    return {corroborated:agree>0,conflict:conflict,confidence_bonus:Math.round(bonus*1e4)/1e4,
+      observed_avg_inflow:observed,sources:src};
+  }
+
+  function engine(p){
+    var mo=p.inflows.length,out=0,i;
+    for(i=0;i<p.lines.length;i++) out+=p.lines[i][2];
+    var outArr=[];for(i=0;i<mo;i++)outArr.push(out);
+    var ai=mean(p.inflows),cvIn=ai?pstdev(p.inflows)/ai:1;
+    var f={};
+    f.isi=clip(1-cvIn,0,1);
+    f.sr=ai?clip((ai-out)/ai,-1,1):0;
+    var rec=p.lines.filter(function(l){return l[1]===P&&RECURRING[l[0]];});
+    var ot=rec.filter(function(l){return l[3];}).length;
+    f.pc=rec.length?ot/rec.length:0.60;
+    var h=Math.floor(mo/2),fh=mean(p.inflows.slice(0,h)),sh=mean(p.inflows.slice(h));
+    f.gr=fh?clip((sh-fh)/fh,-1,1):0;
+    var ts=0,es=0;for(i=0;i<p.lines.length;i++){ts+=p.lines[i][2];if(ESSENTIAL[p.lines[i][0]])es+=p.lines[i][2];}
+    f.lsi=ts?es/ts:0.60;
+    f.id=p.ekyc?0.80:0.40;
+    var idCov=(p.ekyc?0.50:0.20)+0.20*Math.min(1,2);
+    var C={income_stability:cov(mo,IDEAL.income_stability),payment_discipline:cov(mo,IDEAL.payment_discipline),savings_behaviour:cov(mo,IDEAL.savings_behaviour),financial_trend:cov(mo,IDEAL.financial_trend),lifestyle_stability:cov(mo,IDEAL.lifestyle_stability),identity_trust:idCov};
+    var dims=[],keys=Object.keys(WEIGHTS),wsum=0,den=0,k;
+    for(k=0;k<keys.length;k++){var d=keys[k],sub=band(d,f[DIM_FEAT[d]]);wsum+=WEIGHTS[d]*sub;den+=WEIGHTS[d];dims.push({dim:d,sub:sub,cov:C[d],contrib:WEIGHTS[d]*sub/95*10,w:WEIGHTS[d]});}
+    var score=Math.round(wsum/den*10),tier=score>=720?"Strong":score>=600?"Moderate":"Weak";
+    var br=0;for(k=0;k<dims.length;k++)br+=dims[k].cov;br/=dims.length;
+    var cvOut=out?pstdev(outArr)/out:0,cons=clip(1-cvOut,0,1);
+    var conf=Math.round((0.40*br+0.60*cons)*100)/100;
+    var corr=corroborate(p,ai);                                    // #8
+    if(corr.corroborated)conf=Math.round(Math.min(1,conf+corr.confidence_bonus)*100)/100;
+    var flags=[];
+    if(cvIn>0.50)flags.push("Medium");                       // rule 1 — income instability
+    // rule 2 — spike, parking-aware + employment-aware (#1)
+    var md=median(p.inflows),mx=Math.max.apply(null,p.inflows);
+    if(md&&mx>3*md){
+      var variableEmp=VARIABLE_EMP[(p.emp||"").toLowerCase()];
+      var parked=false;   // transfers/one-offs aren't expressed in a .md file; Python covers parking
+      if(parked)flags.push("High");
+      else if(!variableEmp)flags.push("Medium");
+    }
+    var gap=ai?(p.declared-ai)/ai:0;
+    if(gap>0.02)flags.push(gap<0.15?"Low":gap<0.35?"Medium":"High");   // rule 3
+    var ceil=OCC_CEILING[(p.occ||"").toLowerCase()];                    // rule 4 — occupation norm
+    if(ceil&&p.declared>2.5*ceil)flags.push("Medium");
+    if(p.declared&&p.declared%10000000===0&&ai&&(p.declared-ai)/ai>0.15)flags.push("Low");  // rule 5 round
+    if(p.accountAge!==null&&p.accountAge<3)flags.push("Low");           // rule 6 new account
+    if(p.priorApps>2)flags.push("Medium");                             // rule 7 velocity
+    if(corr.conflict){var worst=0;for(i=0;i<corr.sources.length;i++)if(corr.sources[i].conflicts&&corr.sources[i].gap>worst)worst=corr.sources[i].gap;flags.push(worst>=0.60?"High":"Medium");}  // #8 conflict
+    var fpts=0;for(k=0;k<flags.length;k++)fpts+=FPOINTS[flags[k]];      // #2 additive score
+    var fraud=fpts>=60?"High":fpts>=25?"Medium":"Low";
+    // affordability (#4): tighter of surplus cap and DSR cap
+    var surplus=Math.round(ai-out),surplusCap=Math.max(0,0.60*surplus*p.tenor);
+    var rr=APR/12, maxInst=Math.max(0,DSR_MAX*ai-p.existingDebt);
+    var dsrCap=maxInst<=0?0:(rr===0?maxInst*p.tenor:maxInst*(1-Math.pow(1+rr,-p.tenor))/rr);
+    var maxP=Math.max(0,Math.floor(Math.min(surplusCap,dsrCap)/5000000)*5000000);
+    var suggested=Math.min(p.requested,maxP),adjusted=suggested<p.requested;
+    var inst=suggested<=0?0:(rr===0?suggested/p.tenor:suggested*rr/(1-Math.pow(1+rr,-p.tenor)));
+    var dsr=ai?Math.round((p.existingDebt+inst)/ai*100)/100:0;
+    var cls,recKey;
+    if(fraud==="High"||score<600){cls="bad";recKey="rec_reject";}
+    else if(fraud==="Medium"||score<720){cls="warn";recKey="rec_review";}
+    else{cls="ok";recKey=adjusted?"rec_approve_adjusted":"rec_approve";}
+    var review=adjusted||fraud!=="Low"||score<720;
+    function subOf(d){for(var j=0;j<dims.length;j++)if(dims[j].dim===d)return dims[j].sub;return 0;}
+    function hasOnTime(cat){return p.lines.some(function(l){return l[1]===P&&l[0]===cat&&l[3];});}
+    var pos=[];
+    if(subOf("income_stability")>=70)pos.push("stable_inflow");
+    if(hasOnTime("insurance"))pos.push("reg_insurance");
+    if(hasOnTime("utility"))pos.push("consistent_utility");
+    if(cons>=0.90)pos.push("low_volatility");
+    if(subOf("savings_behaviour")>=80)pos.push("healthy_savings");
+    if(subOf("identity_trust")>=80)pos.push("verified_id");
+    pos=pos.slice(0,4);
+    var risk=[];
+    if((p.emp||"").toLowerCase()==="freelancer"&&subOf("income_stability")<80)risk.push("freelance_var");
+    if(fraud!=="Low")risk.push("fraud_signals");
+    if(subOf("savings_behaviour")<=50)risk.push("low_savings");
+    if(subOf("payment_discipline")<60)risk.push("missed_payments");
+    var thin=p.hist==="thin"||p.hist==="none";
+    var base=(thin||p.tradelines<=0)?{d:"REJECT"}:{d:(600+Math.min(p.tradelines,12)*15)>=660?"APPROVE":"REJECT"};
+    return {score:score,tier:tier,confidence:conf,breadth:br,fraud:fraud,fpts:fpts,dsr:dsr,dims:dims,pos:pos,risk:risk,cls:cls,recKey:recKey,review:review,suggested:suggested,adjusted:adjusted,surplus:surplus,maxP:maxP,avgIn:ai,avgOut:out,base:base,corroboration:corr};
+  }
+
+  // ---------------- parser ----------------
+  function toNum(s){return parseInt(String(s).replace(/[, ]/g,"").replace(/vnd/ig,""),10);}
+  function parseApplicant(text){
+    var lines=String(text).split(/\r?\n/),section="",A={},inflows=[],out=[],i;
+    for(i=0;i<lines.length;i++){
+      var raw=lines[i].trim();
+      if(!raw)continue;
+      if(raw.charAt(0)==="#"){
+        var hd=raw.replace(/#/g,"").toLowerCase();
+        if(hd.indexOf("applicant")>=0&&hd.indexOf("file")<0)section="applicant";
+        else if(hd.indexOf("loan")>=0||hd.indexOf("request")>=0)section="loan";
+        else if(hd.indexOf("inflow")>=0)section="inflow";
+        else if(hd.indexOf("outflow")>=0)section="outflow";
+        else section="";
+        continue;
+      }
+      var item=raw.replace(/^[-*]\s*/,"");
+      if(section==="applicant"||section==="loan"){
+        var c=item.indexOf(":");if(c<0)continue;
+        A[item.slice(0,c).trim().toLowerCase().replace(/\s+/g,"_")]=item.slice(c+1).trim();
+      }else if(section==="inflow"){
+        var c2=item.lastIndexOf(":");if(c2<0)continue;
+        var v=toNum(item.slice(c2+1));if(!isNaN(v))inflows.push(v);
+      }else if(section==="outflow"){
+        if(item.indexOf("|")<0)continue;
+        var pr=item.split("|").map(function(x){return x.trim();});
+        var amt=toNum(pr[2]||"0");if(isNaN(amt))continue;
+        out.push([(pr[0]||"other").toLowerCase(),/pay/i.test(pr[1]||"")?P:E,amt,/^(on[_ ]?time|yes|true|1|paid)$/i.test(pr[3]||"on_time")]);
+      }
+    }
+    var errs=[];
+    if(!A.name)errs.push("missing '- name:' in ## Applicant");
+    if(inflows.length<2)errs.push("need at least 2 monthly inflow lines under ## Monthly Inflow");
+    if(!(toNum(A.requested_amount)>0))errs.push("missing/invalid '- requested_amount:' in ## Loan Request");
+    if(errs.length)throw new Error(errs.join(" · "));
+    function boolv(s,def){if(s===undefined)return def;return /^(true|yes|1)$/i.test(String(s).trim());}
+    return {name:A.name,emp:A.employment||"",occ:A.occupation||"",hist:(A.credit_history||"thin").toLowerCase(),
+      ekyc:boolv(A.ekyc_verified,true),tradelines:parseInt(A.bureau_tradelines||"0",10)||0,
+      declared:toNum(A.declared_monthly_income)||0,requested:toNum(A.requested_amount)||0,
+      tenor:parseInt(A.tenor_months||"12",10)||12,purpose:A.purpose||"",inflows:inflows,lines:out,
+      accountAge:(A.account_age_months!==undefined?parseInt(A.account_age_months,10):null),
+      priorApps:parseInt(A.prior_applications||"0",10)||0,existingDebt:toNum(A.existing_monthly_debt)||0,
+      payslip:(A.payslip_monthly_income!==undefined?toNum(A.payslip_monthly_income):null),
+      registry:((A.registry_monthly_income||A.national_data_income)!==undefined?toNum(A.registry_monthly_income||A.national_data_income):null)};
+  }
+
+  // ---------------- render (i18n-aware) ----------------
+  var VIC={ok:"✓",warn:"~",bad:"✕"};
+  var _last=null;
+  function esc(s){return String(s==null?"":s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+
+  // In-browser fallback has no server provenance — synthesise the same shape so the governance
+  // card renders identically offline (e.g. the shared artifact) as it does against the real API.
+  function localProvenance(r,p){
+    var scopes=["open_banking:read"];
+    if(p.payslip!=null)scopes.push("payslip:read");
+    if(p.registry!=null)scopes.push("national_data:read");
+    return {
+      partner:{display_name:"Mock Open Banking (sandbox)",category:"open_banking",approved:true},
+      consent:{scopes:scopes,status:"active",implicit:true},
+      corroboration:r.corroboration||{corroborated:false,conflict:false,sources:[]},
+      input_hash:"(local — computed in browser)",
+      versions:{engine:"in-browser"}
+    };
+  }
+
+  function renderGov(prov){
+    var gov=$("#gov"); if(!gov)return;
+    if(!prov){gov.hidden=true;return;}
+    gov.hidden=false;
+    var pa=prov.partner||{},co=prov.consent||{},cr=prov.corroboration||{};
+    var pApproved=pa.approved!==false;
+    var partnerCell='<div class="gov-cell"><div class="gov-t"><span class="dot"></span>'+T("gov_partner")+'</div>'+
+      '<div class="gov-row"><span>'+esc(pa.display_name||"—")+'</span><span class="chip '+(pApproved?"ok":"bad")+'">'+T(pApproved?"gov_approved":"gov_unapproved")+'</span></div>'+
+      '<div class="gov-row"><span>'+T("gov_category")+'</span><b>'+esc(pa.category||"—")+'</b></div></div>';
+    var active=(co.status||"active")==="active";
+    var scopes=(co.scopes||[]).map(function(s){return '<span class="chip blue">'+esc(s)+'</span>';}).join("");
+    var consentCell='<div class="gov-cell"><div class="gov-t"><span class="dot"></span>'+T("gov_consent")+'</div>'+
+      '<div class="gov-row"><span>'+T("gov_consent_status")+'</span><span class="chip '+(active?"ok":"bad")+'">'+T(active?"gov_active":"gov_revoked")+' · '+T(co.implicit?"gov_implicit":"gov_explicit")+'</span></div>'+
+      '<div class="gov-row"><span>'+T("gov_scopes")+'</span></div><div class="gov-scopes">'+scopes+'</div></div>';
+    var corrCell;
+    if(cr.sources&&cr.sources.length){
+      var rows=cr.sources.map(function(s){
+        var chip=s.conflicts?'<span class="chip bad">'+T("gov_conflicts")+'</span>':(s.agrees?'<span class="chip ok">'+T("gov_agrees")+'</span>':'<span class="chip warn">±'+Math.round(s.gap*100)+'%</span>');
+        return '<div class="corr-src"><span class="nm">'+esc(s.name)+'</span><span class="rp">'+VND(s.reported)+'</span>'+chip+'</div>';
+      }).join("");
+      var head=cr.conflict?'<span class="chip bad">'+T("gov_corr_conflict")+'</span>':(cr.corroborated?'<span class="chip ok">'+T("gov_corr_yes")+'</span>':'');
+      var effect=cr.confidence_bonus?('<div class="gov-row"><span>'+T("gov_conf_effect")+'</span><b>+'+cr.confidence_bonus.toFixed(2)+'</b></div>'):'';
+      corrCell='<div class="gov-cell wide"><div class="gov-t"><span class="dot"></span>'+T("gov_corrob")+' '+head+'</div>'+
+        '<div class="gov-row"><span>'+T("gov_observed")+'</span><b>'+VND(cr.observed_avg_inflow||0)+'</b></div>'+rows+effect+'</div>';
+    }else{
+      corrCell='<div class="gov-cell wide"><div class="gov-t"><span class="dot"></span>'+T("gov_corrob")+'</div><div class="gov-row"><span>'+T("gov_corr_no")+'</span></div></div>';
+    }
+    var ver=prov.versions?Object.keys(prov.versions).map(function(k){return k+" "+prov.versions[k];}).join(" · "):"—";
+    // real audit time from the API when present; a fixed demo stamp for the in-browser fallback
+    var ts=prov.decided_at?String(prov.decided_at).replace("T"," ").slice(0,16):"2026-07-11 14:03 (Demo)";
+    var auditCell='<div class="gov-cell wide"><div class="gov-t"><span class="dot"></span>'+T("gov_audit")+' <span class="chip ok">'+T("gov_recorded")+'</span></div>'+
+      '<div class="gov-row"><span>'+T("gov_timestamp")+'</span><b class="mono">'+esc(ts)+'</b></div>'+
+      '<div class="gov-row"><span>'+T("gov_hash")+'</span><b class="mono">'+esc(prov.input_hash||"—")+'</b></div>'+
+      '<div class="gov-row"><span>'+T("gov_versions")+'</span><b>'+esc(ver)+'</b></div>'+
+      '<div class="gov-note">'+T("gov_note")+'</div></div>';
+    $("#gov-grid").innerHTML=partnerCell+consentCell+corrCell+auditCell;
+  }
+
+  // The money shot: traditional bureau-only vs TrustLink AI. Presentation only — reads the same
+  // engine result (r.base is the bureau baseline, r.cls/recKey/score/... the TrustLink decision).
+  function renderCompare(r){
+    var grid=$("#cmp-grid"); if(!grid)return;
+    var bureauReject=r.base.d==="REJECT";
+    var tradState=bureauReject?"badc":"good", tradIc=bureauReject?"✕":"✓";
+    var tradDec=T(bureauReject?"cmp_trad_reject":"cmp_trad_approve");
+    var tradReason=T(bureauReject?"cmp_trad_reason_reject":"cmp_trad_reason_approve");
+    var tlState=r.cls==="ok"?"good":r.cls==="warn"?"warnc":"badc";
+    var metrics=
+      '<span class="chip blue">'+T("cmp_score")+' '+r.score+'</span>'+
+      '<span class="chip blue">'+T("m_conf")+' '+r.confidence.toFixed(2)+'</span>'+
+      '<span class="chip '+(r.fraud==="Low"?"ok":r.fraud==="Medium"?"warn":"bad")+'">'+T("m_fraud")+' '+T("fraud_"+r.fraud.toLowerCase())+'</span>';
+    grid.innerHTML=
+      '<div class="cmp-side '+tradState+'">'+
+        '<div class="cmp-t">'+T("cmp_trad_t")+'</div>'+
+        '<div class="cmp-dec"><span class="ic">'+tradIc+'</span>'+tradDec+'</div>'+
+        '<div class="cmp-row"><b>'+T("cmp_reason")+':</b> '+tradReason+'</div>'+
+        '<div class="cmp-row"><b>'+T("cmp_limitation")+':</b> '+T("cmp_trad_limit")+'</div>'+
+      '</div>'+
+      '<div class="cmp-side '+tlState+'">'+
+        '<div class="cmp-t">'+T("cmp_tl_t")+'</div>'+
+        '<div class="cmp-dec"><span class="ic">'+VIC[r.cls]+'</span>'+T(r.recKey)+'</div>'+
+        '<div class="cmp-row"><b>'+T("cmp_reason")+':</b> '+T("cmp_tl_reason")+'</div>'+
+        '<div class="cmp-metrics">'+metrics+'</div>'+
+      '</div>';
+  }
+
+  function render(r,p){
+    _last={r:r,p:p};
+    $("#report").hidden=false;
+    $("#verdict").className="verdict "+r.cls;
+    $("#v-word").textContent=T("v_"+r.cls); $("#v-ic").textContent=VIC[r.cls];
+    $("#v-th").textContent=T(r.recKey);
+    $("#v-sub").textContent=r.review?T("sub_review"):T("sub_clear");
+    $("#v-amt").innerHTML=r.suggested>0
+      ?'<span class="l">'+T("suggested")+'</span><span class="a">'+VND(r.suggested)+'</span><span class="l">'+p.tenor+' '+T("months")+'</span>'
+      :'<span class="l">'+T("suggested")+'</span><span class="a">—</span>';
+
+    var creditKey="credit_"+(p.hist==="none"?"none":p.hist==="established"?"established":"thin");
+    $("#who").innerHTML=[
+      [T("who_applicant"),p.name],[T("who_employment"),p.emp||"—"],
+      [T("who_credit"),T(creditKey)],[T("who_requested"),VND(p.requested)+" · "+p.tenor+" "+T("months")]
+    ].map(function(x){return '<span class="c">'+x[0]+': <b>'+x[1]+'</b></span>';}).join("");
+
+    $("#g-num").textContent=r.score;
+    var col=r.tier==="Strong"?"var(--ok)":r.tier==="Moderate"?"var(--warn)":"var(--bad)";
+    var arc=$("#g-arc");arc.style.stroke=col;
+    requestAnimationFrame(function(){arc.style.strokeDashoffset=339.29*(1-r.score/1000);});
+    $("#m-tier").textContent=T("tier_"+r.tier.toLowerCase());$("#m-tier").style.color=col;
+    $("#m-conf").textContent=r.confidence.toFixed(2);
+    var ctip=$("#conf-tip"); if(ctip)ctip.title=T("m_conf_tip");
+    $("#m-fraud").textContent=T("fraud_"+r.fraud.toLowerCase());
+    $("#m-fraud").style.color=r.fraud==="Low"?"var(--ok)":r.fraud==="Medium"?"var(--warn)":"var(--bad)";
+    $("#conf-hint").textContent=T("conf_hint").replace("{b}",r.breadth.toFixed(2));
+    renderCompare(r);
+
+    var dh=$("#dims");dh.innerHTML="";
+    r.dims.forEach(function(d){
+      var cls=d.sub<40?"bad":d.sub<60?"low":"";
+      var el=document.createElement("div");el.className="dim";
+      el.innerHTML='<div class="dim-top"><span class="dim-name">'+T("dim_"+d.dim)+'</span><span class="dim-sub">'+d.sub+'</span></div><div class="bar"><i class="'+cls+'"></i></div><div class="dim-meta"><span>'+T("lbl_weight")+' '+d.w+'%</span><span>+'+Math.round(d.contrib)+' '+T("lbl_pts")+'</span><span class="cov">'+T("lbl_coverage")+' '+Math.round(d.cov*100)+'%</span></div>';
+      dh.appendChild(el);
+      var bar=el.querySelector(".bar i");requestAnimationFrame(function(){bar.style.width=d.sub+"%";});
+    });
+    $("#pos").innerHTML=r.pos.length?r.pos.map(function(id){return "<li>"+T("fac_"+id)+"</li>";}).join(""):'<li class="none">'+T("none")+'</li>';
+    $("#risk").innerHTML=r.risk.length?r.risk.map(function(id){return "<li>"+T("fac_"+id)+"</li>";}).join(""):'<li class="none">'+T("none")+'</li>';
+    $("#af-grid").innerHTML=
+      '<div class="af"><span>'+T("af_in")+'</span><b>'+VND(r.avgIn)+'</b></div>'+
+      '<div class="af"><span>'+T("af_out")+'</span><b>'+VND(r.avgOut)+'</b></div>'+
+      '<div class="af pos"><span>'+T("af_surplus")+'</span><b>'+VND(r.surplus)+'</b></div>'+
+      '<div class="af"><span>'+T("af_requested")+'</span><b>'+VND(p.requested)+'</b></div>'+
+      '<div class="af"><span>'+T("af_cap")+'</span><b>'+VND(r.maxP)+'</b></div>'+
+      '<div class="af"><span>'+T("af_dsr")+'</span><b>'+Math.round(r.dsr*100)+'%</b></div>'+
+      '<div class="af hi"><span>'+T("af_offer")+'</span><b>'+(r.suggested>0?VND(r.suggested):"—")+'</b></div>';
+    renderGov(r.provenance||localProvenance(r,p));
+    var bk=$("#backend");
+    if(bk) bk.innerHTML = r._backend==="api"
+      ? '⚙ <b>Computed by TrustLink API</b> (real Python engine, server-side)'
+      : '⚙ Computed in-browser (no backend connected)';
+    $("#report").scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+
+  function setStatus(msg,kind){var s=$("#status");s.className="status"+(kind?" "+kind:"");s.innerHTML=msg;}
+
+  function generate(){
+    var text=$("#paste").value;
+    if(!text.trim()){setStatus(T("err_empty"),"err");return;}
+    var p;
+    try{ p=parseApplicant(text); }
+    catch(e){ setStatus(T("err_prefix")+"<b>"+e.message+"</b>","err"); $("#report").hidden=true; return; }
+    analyze(text,p);
+  }
+
+  // Try the real Python backend first; fall back to the in-browser engine (e.g. shared artifact).
+  function analyze(text,p){
+    var done=false;
+    function ok(r,backend){ if(done)return; done=true; r._backend=backend;
+      setStatus(T("st_analysed").replace("{name}",p.name).replace("{n}",p.inflows.length),"ok");
+      render(r,p); }
+    function local(){ if(done)return; try{ ok(engine(p),"local"); }
+      catch(e2){ done=true; setStatus("Engine error: <b>"+e2.message+"</b>","err"); } }
+    if(!window.fetch){ local(); return; }
+    var ctrl=("AbortController" in window)?new AbortController():null;
+    var to=setTimeout(function(){ if(ctrl)ctrl.abort(); local(); },1500);
+    fetch("/api/score",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({md:text,mode:"hand"}),signal:ctrl?ctrl.signal:undefined})
+      .then(function(resp){ if(!resp.ok)throw 0; return resp.json(); })
+      .then(function(r){ clearTimeout(to); ok(r,"api"); })
+      .catch(function(){ clearTimeout(to); local(); });
+  }
+
+  function loadText(text,label){ $("#paste").value=text; setStatus((label||"File")+" "+T("st_loaded"),"ok"); }
+
+  // ---------------- apply language ----------------
+  function applyLang(){
+    document.documentElement.setAttribute("lang",LANG);
+    var els=document.querySelectorAll("[data-i18n]");
+    for(var i=0;i<els.length;i++){ els[i].textContent=T(els[i].getAttribute("data-i18n")); }
+    $("#paste").setAttribute("placeholder",T("ph"));
+    var cur=$("#langcur"); if(cur) cur.textContent=langText(LANG);
+    var lb=document.querySelectorAll("#langmenu button");
+    for(var j=0;j<lb.length;j++){ lb[j].classList.toggle("on", lb[j].getAttribute("data-l")===LANG); }
+    if(_last) render(_last.r,_last.p);          // re-render the report in the new language
+  }
+
+  // ---------------- wiring ----------------
+  var langbtn=$("#langbtn"),langmenu=$("#langmenu"),langsel=$("#langsel");
+  function closeLangMenu(){langmenu.hidden=true;langbtn.setAttribute("aria-expanded","false");}
+  LANGS.forEach(function(L){
+    var b=document.createElement("button");b.type="button";b.setAttribute("role","option");b.setAttribute("data-l",L[0]);
+    b.innerHTML='<span class="fl">'+L[1]+'</span> '+L[2];
+    b.onclick=function(){LANG=L[0];applyLang();closeLangMenu();};
+    langmenu.appendChild(b);
+  });
+  langbtn.addEventListener("click",function(e){e.stopPropagation();
+    if(langmenu.hidden){langmenu.hidden=false;langbtn.setAttribute("aria-expanded","true");}else{closeLangMenu();}});
+  document.addEventListener("click",function(e){if(!langsel.contains(e.target))closeLangMenu();});
+
+  var drop=$("#drop"),fileInput=$("#file");
+  $("#pick").addEventListener("click",function(e){e.stopPropagation();fileInput.click();});
+  drop.addEventListener("click",function(e){if(e.target.id!=="pick")fileInput.click();});
+  drop.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();fileInput.click();}});
+  fileInput.addEventListener("change",function(){var f=fileInput.files[0];if(f)readFile(f);});
+  ["dragenter","dragover"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add("hot");});});
+  ["dragleave","drop"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove("hot");});});
+  drop.addEventListener("drop",function(e){var f=e.dataTransfer&&e.dataTransfer.files[0];if(f)readFile(f);});
+  function readFile(f){var rd=new FileReader();rd.onload=function(){loadText(rd.result,f.name);generate();};rd.onerror=function(){setStatus("Couldn't read that file.","err");};rd.readAsText(f);}
+
+  $("#gen").addEventListener("click",generate);
+  $("#example").addEventListener("click",function(){loadText(SAMPLE,"Example");generate();});
+
+  var SAMPLE=[
+    "# TrustLink Applicant File","",
+    "## Applicant",
+    "- name: Ms. Aom","- employment: Freelancer","- occupation: Digital Designer",
+    "- credit_history: thin","- ekyc_verified: true","- bureau_tradelines: 0",
+    "- declared_monthly_income: 18500000","- currency: VND","",
+    "## Loan Request",
+    "- requested_amount: 50000000","- tenor_months: 12","- purpose: Business equipment","",
+    "## Monthly Inflow (Open Banking)",
+    "- 2026-01: 18200000","- 2026-02: 14500000","- 2026-03: 22900000",
+    "- 2026-04: 14800000","- 2026-05: 22200000","- 2026-06: 18400000","",
+    "## Monthly Outflow (per month)",
+    "- rent | expense | 4500000 | on_time","- food | expense | 2500000 | on_time",
+    "- transport | expense | 1000000 | on_time","- utility | payment | 800000 | on_time",
+    "- insurance | payment | 716000 | on_time","- shopping | expense | 2684000 | on_time"
+  ].join("\n");
+
+  applyLang();   // initial paint (English)
+})();
+</script>

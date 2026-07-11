@@ -1,0 +1,58 @@
+# Banded thresholds: each dimension maps its primary feature value -> a 0-100 sub-score.
+# Transparent and explainable by construction (no percentiles, which would need a real
+# population we do not have with synthetic data). A band matches when min <= value < max;
+# the highest band is inclusive of its max. See calibration_note.md for the anchor rationale.
+bands_version: "1.0.0"
+
+dimensions:
+  income_stability:
+    feature: income_stability_index          # 1 - coefficient_of_variation(monthly inflow)
+    bands:
+      - {min: 0.86, max: 9.99, subscore: 82}
+      - {min: 0.75, max: 0.86, subscore: 70}  # Ms. Aom (freelance variance) lands here
+      - {min: 0.60, max: 0.75, subscore: 55}
+      - {min: 0.40, max: 0.60, subscore: 40}
+      - {min: -9.99, max: 0.40, subscore: 25}
+
+  payment_discipline:
+    feature: payment_consistency             # on-time ratio of recurring bill payments
+    bands:
+      - {min: 0.98, max: 9.99, subscore: 88}  # 100% on-time; sub-max: short thin-file history
+      - {min: 0.90, max: 0.98, subscore: 75}
+      - {min: 0.75, max: 0.90, subscore: 60}
+      - {min: 0.50, max: 0.75, subscore: 40}
+      - {min: -9.99, max: 0.50, subscore: 20}
+
+  savings_behaviour:
+    feature: saving_ratio                    # (inflow - outflow) / inflow
+    bands:
+      - {min: 0.35, max: 9.99, subscore: 90}
+      - {min: 0.25, max: 0.35, subscore: 80}  # Ms. Aom ~0.29
+      - {min: 0.15, max: 0.25, subscore: 65}
+      - {min: 0.05, max: 0.15, subscore: 50}
+      - {min: -9.99, max: 0.05, subscore: 30}
+
+  financial_trend:
+    feature: income_growth_rate              # (second-half avg - first-half avg) / first-half avg
+    bands:
+      - {min: 0.10, max: 9.99, subscore: 85}
+      - {min: 0.03, max: 0.10, subscore: 68}
+      - {min: -0.03, max: 0.03, subscore: 52}  # Ms. Aom ~flat (short window, no trend yet)
+      - {min: -0.10, max: -0.03, subscore: 38}
+      - {min: -9.99, max: -0.10, subscore: 22}
+
+  lifestyle_stability:
+    feature: lifestyle_stability_index       # essential-vs-discretionary balance, low volatility
+    bands:
+      - {min: 0.85, max: 9.99, subscore: 88}
+      - {min: 0.72, max: 0.85, subscore: 76}  # Ms. Aom ~0.78
+      - {min: 0.55, max: 0.72, subscore: 60}
+      - {min: 0.35, max: 0.55, subscore: 45}
+      - {min: -9.99, max: 0.35, subscore: 30}
+
+  identity_trust:
+    feature: identity_confidence             # eKYC + source corroboration
+    bands:
+      - {min: 0.75, max: 9.99, subscore: 80}  # eKYC verified
+      - {min: 0.50, max: 0.75, subscore: 55}
+      - {min: -9.99, max: 0.50, subscore: 30}

@@ -1,0 +1,11 @@
+[project]
+name = "trustlink"
+version = "0.1.0"
+description = "TrustLink AI — Trust Intelligence Engine (TIE) spine"
+requires-python = ">=3.10"
+dependencies = ["pyyaml>=6.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"

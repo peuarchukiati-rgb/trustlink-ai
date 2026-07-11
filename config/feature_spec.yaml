@@ -1,0 +1,75 @@
+# Declarative, versioned feature registry — the single source of truth for the feature layer.
+# Each feature is a pure function of (events, as_of, window); it only reads events dated <= as_of
+# (point-in-time correctness) and returns (value, coverage). Missingness lands ONLY in coverage,
+# never in value, so a thin file is never silently penalised.
+spec_version: "1.0.0"
+window_months: 6
+
+features:
+  income_stability_index:
+    version: 1
+    unit: ratio_0_1
+    expected_range: [0.0, 1.0]
+    dimension: income_stability
+    ideal_months: 9            # coverage = observed_months / ideal_months
+    description: "1 - coefficient_of_variation(monthly inflow)"
+
+  saving_ratio:
+    version: 1
+    unit: ratio
+    expected_range: [-1.0, 1.0]
+    dimension: savings_behaviour
+    ideal_months: 9
+    description: "(avg monthly inflow - avg monthly outflow) / avg monthly inflow"
+
+  payment_consistency:
+    version: 1
+    unit: ratio_0_1
+    expected_range: [0.0, 1.0]
+    dimension: payment_discipline
+    ideal_months: 10
+    description: "share of recurring bill payments made on time"
+
+  income_growth_rate:
+    version: 1
+    unit: pct
+    expected_range: [-1.0, 1.0]
+    dimension: financial_trend
+    ideal_months: 12           # a trend genuinely needs a long window
+    description: "(second-half avg inflow - first-half avg inflow) / first-half avg inflow"
+
+  lifestyle_stability_index:
+    version: 1
+    unit: ratio_0_1
+    expected_range: [0.0, 1.0]
+    dimension: lifestyle_stability
+    ideal_months: 8
+    description: "essential-spend ratio adjusted for discretionary-spend volatility"
+
+  median_daily_balance:
+    version: 1
+    unit: vnd
+    expected_range: [0.0, 1.0e12]
+    dimension: savings_behaviour
+    ideal_months: 6
+    secondary: true            # reported for context/anti-gaming; not a primary scorer
+    description: "MEDIAN reconstructed daily balance (median resists parked-cash gaming)"
+
+  expense_diversity:
+    version: 1
+    unit: index
+    expected_range: [0.0, 1.0]
+    dimension: lifestyle_stability
+    ideal_months: 6
+    secondary: true
+    description: "normalised spread of spend across categories (Simpson-style)"
+
+  identity_confidence:
+    version: 1
+    unit: ratio_0_1
+    expected_range: [0.0, 1.0]
+    dimension: identity_trust
+    ideal_months: 0            # KYC-derived, not transaction-window derived
+    description: "eKYC verification plus data-source corroboration"
+
+# Fraud is intentionally NOT a weighted feature — it is an independent veto (see fraud/).
